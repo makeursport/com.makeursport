@@ -1,0 +1,22 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" 
+    android:orientation="vertical">
+	<LinearLayout android:id="@+id/bloc_infos_course"
+		android:layout_width="match_parent"
+       	android:layout_height="80dip">
+	<TextView
+       android:id="@+id/infosCourse"
+       android:layout_width="match_parent"
+       android:layout_height="match_parent"
+       android:text="@string/hello_world"/> 
+	    
+	</LinearLayout>
+
+  <fragment
+	  android:id="@+id/mapfragment"
+	  android:layout_width="match_parent"
+	  android:layout_height="match_parent"
+	  class="com.makeursport.MyMapFragment"/>
+</LinearLayout>
