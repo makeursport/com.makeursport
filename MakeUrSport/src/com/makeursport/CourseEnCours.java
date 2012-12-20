@@ -1,5 +1,7 @@
 package com.makeursport;
-
+/**
+ * Normalement, j'ai tout modifié, et c'est le fichiers le plus à jour (20:05)
+ */
 import java.util.Date;
 
 import com.actionbarsherlock.app.SherlockFragmentActivity;
