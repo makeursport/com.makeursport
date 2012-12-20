@@ -3,7 +3,7 @@ MakeUrSport/.metadata
 MakeUrSport/.classpath
 MakeUrSport/.project
 MakeUrSport/project.properties
-
+MakeUrSport/.gitignore
 # built application files
 *.apk
 *.ap_
