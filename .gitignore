@@ -1,9 +1,3 @@
-MakeUrSport/bin
-MakeUrSport/.metadata
-MakeUrSport/.classpath
-MakeUrSport/.project
-MakeUrSport/project.properties
-MakeUrSport/.gitignore
 # built application files
 *.apk
 *.ap_
@@ -20,9 +14,37 @@ MakeUrSport/gen/
 
 # Local configuration file (sdk path, etc)
 MakeUrSport/local.properties
+MakeUrSport/project.properties
 MakeUrSport/build.xml
 
 # Eclipse project files
-MakeUrSport/.classpath
-MakeUrSport/.project
 MakeUrSport/proguard-project.txt
+
+
+#Eclipse git ignore
+MakeUrSport/*.pydevproject
+MakeUrSport/.project
+MakeUrSport/.metadata
+MakeUrSport/bin/**
+MakeUrSport/tmp/**
+MakeUrSport/tmp/**/*
+MakeUrSport/*.tmp
+MakeUrSport/*.bak
+MakeUrSport/*.swp
+MakeUrSport/*~.nib
+MakeUrSport/local.properties
+MakeUrSport/.classpath
+MakeUrSport/.settings/
+MakeUrSport/.loadpath
+
+# External tool builders
+MakeUrSport/.externalToolBuilders/
+
+# Locally stored "Eclipse launch configurations"
+MakeUrSport/*.launch
+
+# CDT-specific
+.cproject
+
+# PDT-specific
+.buildpath
