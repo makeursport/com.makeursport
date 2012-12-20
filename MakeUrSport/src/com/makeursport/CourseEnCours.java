@@ -70,6 +70,7 @@ public class CourseEnCours extends SherlockFragmentActivity implements LocationL
         this.mapFragment = (MyMapFragment) fm.findFragmentById(R.id.mapfragment);//Récupération du fragment gérant la carte
         
         Log.d("", "modifiŽ par Paul");
+        Log.d("COUCOU", "modifié par Micky");
         this.demarrerCourse(new Sportif());//On démarre la course avec un nouveau sportif...
         ((TextView)this.findViewById(R.id.infosCourse)).setText(this.maCourse.getDate().toLocaleString());
         /*SportifDS sds = new SportifDS(this.getApplicationContext());
