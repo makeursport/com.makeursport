@@ -15,12 +15,12 @@ MakeUrSport/project.properties
 *.class
 
 # generated files
-bin/
-gen/
+MakeUrSport/bin/
+MakeUrSport/gen/
 
 # Local configuration file (sdk path, etc)
-local.properties
+MakeUrSport/local.properties
 
 # Eclipse project files
-.classpath
-.project
+MakeUrSport/.classpath
+MakeUrSport/.project

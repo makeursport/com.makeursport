@@ -68,7 +68,7 @@ public class CourseEnCours extends SherlockFragmentActivity implements LocationL
         this.maCourse = new Course();// Création d'une nouvelle course.
         this.locationManager = (LocationManager)this.getSystemService(Context.LOCATION_SERVICE);//Initialisation du LocationManager
         this.mapFragment = (MyMapFragment) fm.findFragmentById(R.id.mapfragment);//Récupération du fragment gérant la carte
-        
+        //Ceci vient d'être mis à jour
         Log.d("", "modifiŽ par Paul");
         Log.d("COUCOU", "modifié par Micky");
         this.demarrerCourse(new Sportif());//On démarre la course avec un nouveau sportif...
