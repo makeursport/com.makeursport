@@ -12,6 +12,9 @@
 MakeUrSport/bin/
 MakeUrSport/gen/
 
+#API keys :
+MakeUrSport/res/values/api_keys.xml
+
 # Local configuration file (sdk path, etc)
 MakeUrSport/local.properties
 MakeUrSport/project.properties
@@ -36,7 +39,6 @@ MakeUrSport/local.properties
 MakeUrSport/.classpath
 MakeUrSport/.settings/
 MakeUrSport/.loadpath
-
 # External tool builders
 MakeUrSport/.externalToolBuilders/
 

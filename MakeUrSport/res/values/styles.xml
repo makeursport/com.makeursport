@@ -1,5 +1,72 @@
-<resources>
-
+<resources xmlns:android="http://schemas.android.com/apk/res/android">
+	<!-- necessaire ? -->
     <style name="AppTheme" parent="android:Theme.Light" />
+	
+        <style name="dureeStyle" parent="@android:style/TextAppearance.Medium">
+        <item name="android:background">@color/duree_background_color</item>
+    </style>
+    <style name="Tile">
+        
+    </style>
+    <style name="Tile.Line1">
+		<item name="android:paddingLeft">4dp</item>
+		<item name="android:paddingRight">4dp</item>
+		<item name="android:paddingTop">4dp</item>
+		<item name="android:paddingBottom">2dp</item>
+		<item name="android:orientation">horizontal</item>
+		<item name="android:layout_weight">9</item>
+    </style>
+    <style name="Tile.Tile">
+     	<item name="android:background">@drawable/border_textview_shape</item>
+		<item name="android:orientation">vertical</item>
+		<item name="android:layout_weight">1</item>
 
+	</style>
+    <style name="Tile.Tile.Left">
+        <item name="android:layout_marginRight">2dp</item>
+    </style>
+    <style name="Tile.Tile.Right">
+        <item name="android:layout_marginLeft">2dp</item>
+    </style>
+    <style name="Tile.Title">
+        <item name="android:layout_weight">0</item>
+        
+    </style>
+    <style name="Tile.Value" parent="@android:style/TextAppearance.Large">
+        <item name="android:textSize">22sp</item>
+        <item name="android:gravity">center_horizontal</item>
+    </style>
+	<style name="Tile.Line2">
+		<item name="android:paddingLeft">4dp</item>
+		<item name="android:paddingRight">4dp</item>
+		<item name="android:paddingTop">2dp</item>
+		<item name="android:paddingBottom">4dp</item>
+		<item name="android:orientation">horizontal</item>
+		<item name="android:layout_weight">9</item>				
+	</style>
+    
+    
+    <style name="ButtonBar">
+        
+        <item name="android:dividerPadding">0dip</item>
+        
+        <item name="android:paddingTop">0dip</item>
+        <item name="android:paddingStart">0dip</item>
+        <item name="android:paddingEnd">0dip</item>
+        <item name="android:paddingBottom">0dip</item>
+        
+        
+        <item name="android:background">@null</item>
+        <item name="android:showDividers">middle</item>
+        <item name="android:divider">@drawable/divider_vertical_bright</item>
+    </style>
+    
+    <style name="BorderLessButtons">
+        <item name="android:textColor">@color/primary_text_light</item>
+        <item name="android:minHeight">48dip</item>
+        <item name="android:minWidth">64dip</item>
+        <item name="android:background">@drawable/item_background</item>
+        <item name="android:paddingLeft">4dip</item>
+        <item name="android:paddingRight">4dip</item>
+    </style>
 </resources>

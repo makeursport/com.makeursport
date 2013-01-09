@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <PreferenceCategory 
+        android:title="@string/pref_sportif_categ"
+        android:key="sportif_category">                <!-- android:entries="@array/updateInterval"
+            android:entryValues="@array/updateIntervalValues" -->
+        <com.makeursport.preferences.IntEditTextPreference
+            android:key="@string/SP_annee_naissance"
+            android:title="@string/pref_sportif_naissance"
+            android:numeric="integer"
+            android:maxLength="4"
+            
+            />
+        <com.makeursport.preferences.FloatEditTextPreference
+            android:key="@string/SP_poids"
+            android:title="@string/pref_sportif_poids"
+            android:numeric="decimal"/>
+        <com.makeursport.preferences.IntEditTextPreference
+            android:key="@string/SP_taille"
+            android:title="@string/pref_sportif_taille"
+            android:numeric="integer"
+            />
+            
+    </PreferenceCategory>
+    <Preference 
+        android:key="@string/pref_link"
+        android:title="@string/pref_link_title"
+        android:summary="@string/pref_link_summary"/>
+    
+</PreferenceScreen>

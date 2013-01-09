@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="menu_behind_offset">60dp</dimen>
+    <dimen name="shadow_width">15dp</dimen>
+    <color name="voile_inactif_color">#C0555555</color>
+    <color name="primary_text_light">#000000</color>
+    <color name="transparent">#00000000</color>
+   	<color name="duree_background_color">#0F000000</color>
+    
+</resources>

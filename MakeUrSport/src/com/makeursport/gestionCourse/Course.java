@@ -28,7 +28,7 @@ public class Course {
 	 * @return la durée de la course
 	 */
 	public long getDuree() {
-		return new Date().getTime() - this.debutCourse - this.getTempsPause();
+		return new Date().getTime() - this.getTempsPause() - this.debutCourse ;
 	}
 
 
@@ -44,7 +44,7 @@ public class Course {
 	 * @return la durée pendant laquelle l'utilisateur à été en pause (dans tempsPause)
 	 */
 	public long getTempsPause() {
-		return tempsPause;
+		return this.tempsPause;
 	}
 
 

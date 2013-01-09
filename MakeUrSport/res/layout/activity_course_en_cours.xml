@@ -1,23 +1,157 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/RL_couse_en_cours_main_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent" 
-    android:orientation="vertical">
-  <fragment
-	  android:id="@+id/mapfragment"
-	  android:layout_width="match_parent"
-	  android:layout_height="290dip"
-	  class="com.makeursport.MyMapFragment"/>
-  	<LinearLayout android:id="@+id/bloc_infos_course"
-		android:layout_width="match_parent"
-       	android:layout_height="match_parent">
-	<TextView
-       android:id="@+id/infosCourse"
-       android:layout_width="match_parent"
-       android:layout_height="match_parent"
-       android:text="@string/hello_world"/> 
-	    
+    android:orientation="vertical" 
+    
+    >
+	<LinearLayout
+	    android:id="@+id/activity_course_en_cours_layout"
+	    android:layout_width="match_parent"
+	    android:layout_height="match_parent" 
+	    android:orientation="vertical"> 
+	    <RelativeLayout
+	      android:id="@+id/AL_mapetduree"
+		  android:layout_width="match_parent"
+		  android:layout_height="match_parent"
+	  	  android:layout_weight="4">
+		<FrameLayout 
+			android:id="@+id/mapfragment_location"
+	 		android:layout_width="match_parent"
+			android:layout_height="match_parent"/>
+		<!--    <fragment
+			  android:id="@+id/mapfragment"
+			  android:layout_width="match_parent"
+			  android:layout_height="match_parent"
+			  class="com.makeursport.MyMapFragment"/>-->
+	
+		  <TextView
+		      android:id="@+id/TV_duree"
+		      android:layout_width="wrap_content"
+		      android:layout_height="wrap_content"
+		      android:layout_alignParentBottom="true"
+		      android:layout_alignParentRight="true"
+		      style="@style/dureeStyle"
+		      android:text="@string/duree_par_defaut" />
+	          
+	    </RelativeLayout>
+	  	<LinearLayout android:id="@+id/ligne_1"
+			android:layout_width="match_parent"
+	       	android:layout_height="match_parent"
+			style="@style/Tile.Line1"
+			>
+			  	<LinearLayout android:id="@+id/LL_vit_moy"
+					android:layout_width="match_parent"
+			       	android:layout_height="match_parent"
+			       	style="@style/Tile.Tile.Left"
+					>
+					<TextView
+					    android:id="@+id/TV_vit_moyenne_titre"
+					    android:layout_width="match_parent"
+					    android:layout_height="wrap_content"
+					    android:text="@string/vitmoy_titre"
+					    style="@style/Tile.Title">
+					</TextView>
+					<TextView
+					    android:id="@+id/TV_vit_moyenne_valeur"
+					    android:layout_width="match_parent"
+					    android:layout_height="wrap_content"
+						style="@style/Tile.Value"
+					    android:text="@string/vitmoy_par_defaut"
+					    >
+					</TextView>
+				</LinearLayout>
+			  	<LinearLayout android:id="@+id/LL_vit_reel"
+					android:layout_width="match_parent"
+			       	android:layout_height="match_parent"
+			       	style="@style/Tile.Tile.Right"
+					>
+					<TextView
+					    android:id="@+id/TV_vit_reel_titre"
+					    android:layout_width="match_parent"
+					    android:layout_height="wrap_content"
+					    android:text="@string/vitreel_titre"
+					    style="@style/Tile.Title">
+					</TextView>
+					<TextView
+					    android:id="@+id/TV_vit_reel_valeur"
+					    android:layout_width="match_parent"
+					    android:layout_height="wrap_content"
+						style="@style/Tile.Value"
+					    android:text="@string/vitreel_par_defaut"
+					    >
+					</TextView>
+				</LinearLayout>
+		</LinearLayout>
+			<LinearLayout android:id="@+id/ligne_2"
+			android:layout_width="match_parent"
+	       	android:layout_height="match_parent"
+	       	style="@style/Tile.Line2"
+		>
+			  	<LinearLayout android:id="@+id/LL_calories"
+					android:layout_width="match_parent"
+			       	android:layout_height="match_parent"
+			       	style="@style/Tile.Tile.Left"
+					>
+					<TextView
+					    android:id="@+id/TV_calories_titre"
+					    android:layout_width="match_parent"
+					    android:layout_height="wrap_content"
+					    android:text="@string/calories_titre"
+					    style="@style/Tile.Title">
+					</TextView>
+					<TextView
+					    android:id="@+id/TV_calories_valeur"
+					    android:layout_width="match_parent"
+					    android:layout_height="wrap_content"
+						style="@style/Tile.Value"
+					    android:text="@string/calories_par_defaut"
+					    >
+					</TextView>
+				</LinearLayout>
+			  	<LinearLayout android:id="@+id/LL_distance"
+					android:layout_width="match_parent"
+			       	android:layout_height="match_parent"
+			       	style="@style/Tile.Tile.Right"
+					>
+					<TextView
+					    android:id="@+id/TV_distance_titre"
+					    android:layout_width="match_parent"
+					    android:layout_height="wrap_content"
+					    android:text="@string/dist_titre"
+					    style="@style/Tile.Title">
+					</TextView>
+					<TextView
+					    android:id="@+id/TV_distance_valeur"
+					    android:layout_width="match_parent"
+					    android:layout_height="wrap_content"
+						style="@style/Tile.Value"
+					    android:text="@string/dist_par_defaut"
+					    >
+					</TextView>
+				</LinearLayout>
+		</LinearLayout>
+	
+	
 	</LinearLayout>
 
+	<View
+	    android:id="@+id/voileInactif"
+	    android:layout_width="match_parent"
+	    android:layout_height="match_parent"
+	    android:layout_alignParentLeft="true"
+	    android:layout_alignParentTop="true" 
+	    android:background="@color/voile_inactif_color"
+	    android:visibility="gone"/>
+	<TextView 
+	    android:id="@+id/TV_messageInactif"
+	    android:layout_width="wrap_content"
+	    android:layout_height="wrap_content"
+	    android:layout_alignParentBottom="true"
+	    android:layout_alignParentLeft="true"
+	    android:text="@string/message_inactif"
+	    android:visibility="gone"
+	    />
 
-</LinearLayout>
+</RelativeLayout>
