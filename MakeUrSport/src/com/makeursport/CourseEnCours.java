@@ -339,6 +339,7 @@ public class CourseEnCours extends SherlockFragment implements LocationListener,
 			if(this.gestCourse.getEtatCourse() != EtatCourse.CourseArretee) {
 				this.gestCourse.stopperCourse();
 		    	this.swapIcons(this.gestCourse.getEtatCourse());
+		    	this.gestCourse.getCourse().sauvegarderCourse(this.getSherlockActivity());
 		    	this.cacherVoile();
 				this.mapFragment.activerMapGesture();
 		    	this.stopperLocationListener();

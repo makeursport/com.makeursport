@@ -105,7 +105,7 @@ public class CourseFragment extends SherlockFragment{
 			historique.supprimerCourse(courseId);
 			break;
 		case android.R.id.home:
-			this.getFragmentManager().beginTransaction().remove(this);
+			((MainActivity)this.getSherlockActivity()).switchContent(new HistoriqueFragment());
 		}
 		return true;
 	}

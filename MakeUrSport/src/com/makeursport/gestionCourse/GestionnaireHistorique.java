@@ -14,6 +14,7 @@ import com.makeursport.database.CourseDS;
  * La classe de Gestionnaire Historique qui permet d'intéragir avec notre Base de données.
  * C'est grace à elle que des classes comme {@link CourseFragment} ou {@link HistoriqueFragment}
  * ont accès à cette base de données
+ * @author L'équipe MakeUrSport
  *
  */
 public class GestionnaireHistorique {
@@ -27,13 +28,14 @@ public class GestionnaireHistorique {
 	 * L'{@link HistoriqueFragment} depuis lequel notre GestionnaireHistorique est lancé
 	 */
 	private HistoriqueFragment hFragment;
+	
 	/**
 	 * Le {@link CourseFragment} depuis lequel notre GestionnaireCourse est lancé
 	 */
 	private CourseFragment courseFragment;
 	
 	/**
-	 * Constructeur appelé par tout les autres, et celui par défaut.
+	 * Constructeur par défaut.
 	 * @param context
 	 */
 	public GestionnaireHistorique(Context context) {
@@ -55,6 +57,7 @@ public class GestionnaireHistorique {
 		this(f.getSherlockActivity());
 		this.courseFragment=f;
 	}
+	
 	/**
 	 * Enregistre une course dans la base de données, en arrière plan
 	 * @param course la base de données à executer
@@ -63,6 +66,7 @@ public class GestionnaireHistorique {
 		InsertCourseATask asynctask = new InsertCourseATask();
 		asynctask.execute(course);
 	}
+	
 	/**
 	 * Recupere toutes les courses de la bases de données et mets à jour la vue
 	 * Attention, doit être lancer depuis un HistoriqueFragment
@@ -71,17 +75,20 @@ public class GestionnaireHistorique {
 		SelectTouteCoursesATask asynctask = new SelectTouteCoursesATask();
 		asynctask.execute();
 	}
+	
 	/**
 	 * Selectionne une course et mets à jour la vue
-	 * Attention, doit être lancer depuis un CourseFragment
+	 * <strong>Attention</strong>, doit être lancer depuis un CourseFragment
 	 * @param id l'id de la course à récuperer
 	 */
 	public void selectionnerCourse(int id){
 		SelectCourseATask asynctask= new SelectCourseATask();
 		asynctask.execute(id);
 	}
+	
 	/**
-	 * Supprime une course de la base de données, et mets fin à l'activité en cours
+	 * Supprime une course de la base de données, et change le fragment en cours.
+	 * <strong>Attention:</strong> cette méthode doit être appelé uniquement depuis un CourseFragment
 	 * @param idCourse l'id de la course à supprimer
 	 */
 	public void supprimerCourse(Integer idCourse){

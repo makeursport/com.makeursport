@@ -38,7 +38,7 @@
 	<string name="SP_poids">sportif_poids</string>
     <string name="SP_taille">sportif_taille</string>
     <string name="SP_annee_naissance">sportif_annee_naissance</string>
-    
+    <string name="course_sauvegardee">Course bien sauvegardée !</string>
     <string name="message_erreur_desactivation_GPS">Cette application necessite le GPS. Merci de le réactiver. Course en cours arrétée.</string>
     <string name="GPS_desactive">Votre GPS est désactivé. Veuillez l\'activé pour pouvoir continuer.</string>
     <string name="play_service_not_available">Les Google Play Services ne sont pas disponible. Veuillez les telecharger depuis le market</string>

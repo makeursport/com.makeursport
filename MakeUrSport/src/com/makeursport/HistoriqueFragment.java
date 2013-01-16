@@ -2,15 +2,21 @@ package com.makeursport;
 
 import java.util.ArrayList;
 
+import android.content.Intent;
+import android.location.LocationManager;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.Toast;
 import android.widget.AdapterView.OnItemClickListener;
 import com.actionbarsherlock.app.SherlockListFragment;
+import com.actionbarsherlock.view.MenuItem;
 import com.makeursport.gestionCourse.Course;
+import com.makeursport.gestionCourse.EtatCourse;
 import com.makeursport.gestionCourse.GestionnaireHistorique;
+import com.slidingmenu.lib.app.SlidingFragmentActivity;
 /**
  * Le {@link SherlockListFragment} permettant l'affichage des données contenus dans l'historique.
  * Il récupère toute les courses de l'historique dans le {@link #onResume)
@@ -83,6 +89,7 @@ public class HistoriqueFragment extends SherlockListFragment{
 	    this.setListAdapter(adapter);
         historique=new GestionnaireHistorique(this);
 		historique.selectToutesLesCourses();
+		this.setHasOptionsMenu(true);
 	}
 	/**
 	 * Modifie l'adapter courant et lui dit de mettre à jour sa vue
@@ -92,5 +99,20 @@ public class HistoriqueFragment extends SherlockListFragment{
 		Log.v(LOGCAT_TAG, "Mise à jour de l'adapter avec " + courses.size() + " courses");
 		adapter.setCourses(courses);
 	}
+	/**
+	 * Lors d'un clique sur les boutons du menu
+	 */
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		switch(item.getItemId()) {
+		case android.R.id.home:
+			((SlidingFragmentActivity) getActivity()).toggle();
+			return true;
+		default:
+			return super.onOptionsItemSelected(item);
+		}
+	}
+
+	
 }
 

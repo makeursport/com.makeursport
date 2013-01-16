@@ -2,7 +2,11 @@ package com.makeursport.gestionCourse;
 
 import java.util.Date;
 
+import com.makeursport.R;
+
+import android.content.Context;
 import android.util.Log;
+import android.widget.Toast;
 /**
  * Course avec ses différents caractéristiques
  *
@@ -172,15 +176,21 @@ public class Course {
 	 * @return les calories brûlées
 	 */
 	public float getCaloriesBrulees() {
-		float duree = ((float)this.getDuree()) /60F;
+		float duree = ((float)this.getDuree()) /60.0F;
 		double caloriesBrulees = this.calculerCaloriesBrulees(this.getUser().getPoids(),duree,this.getMet(this.getSport(), this.getVitesseMoyenne()) );
 		
 		return (float) (Math.floor(caloriesBrulees*100)/100);
-
 	}
-	public void sauvegarderCourse() {
-		//GestionnaireHistorique gest = new GestionnaireHistorique();
-		//gest.
+	/**
+	 * Sauvegarde cette course dans l'historique
+	 * @param context Le context de l'application
+	 */
+	public void sauvegarderCourse(Context context) {
+		if(this.getDuree() > 1) {
+			GestionnaireHistorique gest = new GestionnaireHistorique(context);
+			gest.enregistrerCourse(this);
+			Toast.makeText(context, context.getText(R.string.course_sauvegardee), Toast.LENGTH_LONG).show();
+		}
 	}
 
 	/**
@@ -313,7 +323,4 @@ public class Course {
 		}
 		return met;
 	}
-
-	
-	
 }
