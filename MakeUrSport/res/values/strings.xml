@@ -3,16 +3,23 @@
     <string name="app_name">MakeUrSport</string>
     <string name="title_activity_course_en_cours">Course En Cours</string>
 	<string name="title_dialog_sportif">Parametre de l\'utilisateur</string>
+	<string name="title_dialog_generer_parcours">Generation de parcours</string>
+	<string name="title_dialog_sport">Choix d\'un sport</string>
+	<string name="sport_velo">Velo</string>
+	<string name="sport_roller">Roller</string>
+	<string name="sport_course">Course</string>
 	
 	<string name="vitmoy_titre">Vitesse moyenne :</string>
-	<string name="vitmoy_par_defaut">0.0m/s</string>
+	<string name="vitmoy_par_defaut">0.0km/h</string>
 	<string name="vitreel_titre">Vitesse réel :</string>
-	<string name="vitreel_par_defaut">0.0m/s</string>
+	<string name="vitreel_par_defaut">0.0km/h</string>
 	<string name="calories_titre">Calories brûlées :</string>
 	<string name="calories_par_defaut">0</string>
 	<string name="dist_titre">Distance :</string>
 	<string name="dist_par_defaut">0km</string>
 	<string name="duree_par_defaut">00.00.00</string>
+	<string name="unite_distance">km</string>
+	<string name="unite_vitesse">km/h</string>
 	<string name="param_date_naissance">Année de naissance :</string>
 	<string name="param_date_naissance_hint">1993</string>
 	<string name="param_poids">Poids (en kg):</string>
@@ -21,6 +28,8 @@
 	<string name="param_taille_hint">170</string>
 	<string name="dialog_sportif_cancel_button">Annuler</string>
 	<string name="dialog_sportif_confirm_button">Confirmer</string>
+	<string name="parcours_dialog">Distance du parcours à générer (en km)</string>
+	<string name="param_distance_hint">Distance</string>
 	<string name="cancel_string">La modification a été annulée</string>
 	<string name="infos_pas_rempli">Veuillez remplir tout les champs</string>
 	<string name="SP_poids">sportif_poids</string>
@@ -29,7 +38,7 @@
     
     <string name="message_erreur_desactivation_GPS">Cette application necessite le GPS. Merci de le réactiver. Course en cours arrétée.</string>
     <string name="GPS_desactive">Votre GPS est désactivé. Veuillez l\'activé pour pouvoir continuer.</string>
-    
+    <string name="play_service_not_available">Les Google Play Services ne sont pas disponible. Veuillez les telecharger depuis le market</string>
     
     <string name="message_inactif">En attente du signal GPS…</string>
        

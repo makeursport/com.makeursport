@@ -39,7 +39,7 @@
 		
         <activity
             android:name=".CourseEnCours"
-            android:label="@string/app_name"
+            android:label="@string/title_activity_course_en_cours"
             android:screenOrientation="portrait"
             >
             <intent-filter>
@@ -63,6 +63,28 @@
              android:exported="false"
              >
 			<intent-filter>
+				 <action android:name="android.intent.action.MAIN"/>
+			</intent-filter>
+		</activity>
+		<activity android:name="com.makeursport.ParcoursDialog"
+		    android:label="@string/title_dialog_generer_parcours"
+		    android:screenOrientation="portrait"
+		    android:windowSoftInputMode="adjustResize"
+		    android:theme="@style/Theme.Sherlock.Light.Dialog"
+		    android:exported="false"
+		    >
+		    <intent-filter>
+				 <action android:name="android.intent.action.MAIN"/>
+			</intent-filter>
+		</activity>
+		<activity android:name="com.makeursport.SportDialog"
+		    android:label="@string/title_dialog_sport"
+		    android:screenOrientation="portrait"
+		    android:windowSoftInputMode="adjustResize"
+		    android:theme="@style/Theme.Sherlock.Light.Dialog"
+		    android:exported="false"
+		    >
+		    <intent-filter>
 				 <action android:name="android.intent.action.MAIN"/>
 			</intent-filter>
 		</activity>

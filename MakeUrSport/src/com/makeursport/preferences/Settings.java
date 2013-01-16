@@ -8,7 +8,11 @@ import android.preference.Preference.OnPreferenceClickListener;
 
 import com.actionbarsherlock.app.SherlockPreferenceActivity;
 import com.makeursport.R;
-
+/**
+ * Activity des paramètre. Utilise l'ancienne API de paramètre
+ * car la librairie de compatibilité n'importe pas les nouvelles méthodes
+ *
+ */
 public class Settings extends SherlockPreferenceActivity {
 
 	@SuppressWarnings("deprecation")

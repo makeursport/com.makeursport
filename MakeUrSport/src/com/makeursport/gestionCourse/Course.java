@@ -2,13 +2,20 @@ package com.makeursport.gestionCourse;
 
 import java.util.Date;
 
+import android.util.Log;
+/**
+ * Course avec ses différents caractéristiques
+ *
+ */
 public class Course {
+	private static final String LOGCAT_TAG = "Course";
+	private Sport sport;
 	private long debutCourse;
 	private long tempsPause;
 	private long debutPause;
-	private float distance; //en KM
+	private double distance; //en KM
 	private float vitesseReelle; //en KM/H
-	private int caloriesBrulees; //trouver la formule
+	//private double caloriesBrulees; //trouver la formule
 	private EtatCourse etatCourse;
 	private Date date;
 	private Sportif user;
@@ -17,18 +24,19 @@ public class Course {
 		//debutCourse = new Date().getTime();
 		this.setDistance(0);
 		this.setVitesseReelle(0);
-		this.setCaloriesBrulees(0);
+		//this.setCaloriesBrulees(0);
 		this.setEtatCourse(EtatCourse.CourseArretee);
 		this.setDate(new Date());
-		this.tempsPause=0;
+		this.setTempsPause(0);
+		this.setSport(Sport.COURSE);
 	}
 
 	
 	/**
-	 * @return la durée de la course
+	 * @return la durée de la course en seconde
 	 */
 	public long getDuree() {
-		return new Date().getTime() - this.getTempsPause() - this.debutCourse ;
+		return (new Date().getTime() - this.getTempsPause() - this.debutCourse)/1000;
 	}
 
 
@@ -46,70 +54,113 @@ public class Course {
 	public long getTempsPause() {
 		return this.tempsPause;
 	}
-
+	
+	/**
+	 * 
+	 */
+	public void setTempsPause(long tempsPause) {
+		this.tempsPause=tempsPause;
+	}
 
 	/**
 	 * @param tempsPause rajoute tempsPause au temps que l'on a passé en pause
 	 */
 	public void addTempsPause(long tempsPause) {
-		this.tempsPause += tempsPause;
+		this.setTempsPause(this.getTempsPause()+tempsPause);
 	}
 
 	/**
 	 * Calcul la vitesse moyenne de l'utilisateur pour cette course
-	 * @return vitesse moyenne de la course
+	 * @return vitesse moyenne de la course en km/h
 	 */
-	public float calculerVitesseMoyenne () {
-		return this.getDistance() / this.getDuree();
+	public double getVitesseMoyenne () {
+		Log.d(LOGCAT_TAG,"Vitesse Moy : " + (double) this.getDistance() + " / " + (double) this.getDuree()/3600);
+		double vitKms = this.getDistance()*1000 / this.getDuree();
+		return (double) (Math.floor(vitKms/3.6*100)/100);
 	}
 
 
 	/**
 	 * Retourne la distance effectuée de la course
-	 * @return distance de la course
+	 * @return distance de la course en km
 	 */
-	public float getDistance() {
+	private double getDistance() {
 		return this.distance;
 	}
+	/**
+	 * Retourne la distance arrondie effectuée de la course
+	 * @return la distance de la course en km, arrondi au centième
+	 */
+	public float getDistanceArrondi() {
+		return (float) (Math.floor(this.getDistance()*100)/100);
+	}
 
 
-
-	public void setDistance(float distance) {
+	/**
+	 * Met à jour la distance de la course
+	 * @param distance en km
+	 */
+	public void setDistance(double distance) {
 		this.distance = distance;
 	}
+	/**
+	 * Rajoute une distance à la course
+	 * @param distance en km
+	 */
+	public void addDistance(double distance) {
+		this.distance+=distance;
+	}
 
-
-
+	/**
+	 * Retourne la vitesse reelle de la course
+	 * @return Vitesse reel en ce moment en km/h
+	 */
 	public float getVitesseReelle() {
-		return this.vitesseReelle;
+		return (float) Math.floor((this.vitesseReelle*100)/100);
 	}
 
 
-
+	/**
+	 * Met à jour la vitesse reel de la course
+	 * @param vitesseReelle en km/h
+	 */
 	public void setVitesseReelle(float vitesseReelle) {
 		this.vitesseReelle = vitesseReelle;
 	}
 
 
+	/**
+	 * recupere les calories brûlées de la course
+	 * @return les calories brûlées
+	 */
+	public float getCaloriesBrulees() {
+		float duree = this.getDuree()/60;
+		double caloriesBrulees = this.calculerCaloriesBrulees(this.getUser().getPoids(),duree,this.getMet(this.getSport(), this.getVitesseMoyenne()) );
+		
+		return (float) (Math.floor(caloriesBrulees*100)/100);
 
-	public int getCaloriesBrulees() {
-		return this.caloriesBrulees;
 	}
 
 
 
-	public void setCaloriesBrulees(int caloriesBrulees) {
+	/*public void setCaloriesBrulees(double caloriesBrulees) {
 		this.caloriesBrulees = caloriesBrulees;
-	}
+	}*/
 
 
-
+	/**
+	 * recupere l'etat de la course
+	 * @return l'etat de la course
+	 */
 	public EtatCourse getEtatCourse() {
 		return this.etatCourse;
 	}
 
 
-
+	/**
+	 * Met a jour l'etat de la course,  en prenant en compte les temps de pause
+	 * @param etatCourse le nouvel etat de la course
+	 */
 	public void setEtatCourse(EtatCourse etatCourse) {
 		if(this.etatCourse==EtatCourse.CourseEnPause && etatCourse==EtatCourse.CourseLancee) {
 			this.addTempsPause(new Date().getTime() - this.debutPause);
@@ -121,13 +172,19 @@ public class Course {
 	}
 
 
-
+	/**
+	 * recupere le sportif
+	 * @return le sportif
+	 */
 	public Sportif getUser() {
 		return this.user;
 	}
 
 
-
+	/**
+	 * met a jour le sportif de la course
+	 * @param user le sportif
+	 */
 	public void setUser(Sportif user) {
 		this.user = user;
 	}
@@ -147,6 +204,79 @@ public class Course {
 	public void setDate(Date date) {
 		this.date = date;
 	}
+
+	/**
+	 * Recupere le sport de la course
+	 * @return le sport
+	 */
+	public Sport getSport() {
+		return sport;
+	}
+
+	/**
+	 * met a jour le sport de la course
+	 * @param sport 
+	 */
+	public void setSport(Sport sport) {
+		this.sport = sport;
+	}
+
+	
+
+	/**
+	 * Calcul le nombre de calories brulées 
+	 * @param poids le poids du sportif en kg
+	 * @param duree la durée de la course en minutes
+	 * @param met le MET du sport, 
+	 * @return le nombre de calories brûlées par le sportif
+	 */
+	private double calculerCaloriesBrulees(float poids, float duree, float met) {
+		double nbCaloriesBrulees = 0;
+		nbCaloriesBrulees = duree*(met*3.5*poids)/200;
+		return nbCaloriesBrulees;
+	}
+	
+	/**
+	 * Calcul le MET d'un sport a une vitesse particulière
+	 * @param sport le sport pratiqué
+	 * @param vitesse l'allure du sportif (en m/s)
+	 * @return le MET du sport 
+	 */
+	private float getMet(Sport sport, double vitesse){
+		float met = 1.0f;
+		if(sport==Sport.COURSE) {
+			if(vitesse<4){
+				met = 2.3F; 
+			}
+			else if(vitesse<=4.8){
+				met = 3.3F;
+			}
+			else if(vitesse<=5.5){
+				met = 3.6F;
+			}
+			else if(vitesse<=10){
+				met = 7.0F;
+			}
+		}
+		else if(sport==Sport.VELO){
+			if(vitesse<16){
+				met = 4.0F;
+			}
+			else if(vitesse>16){
+				met = 5.5F;
+			}
+		}
+		else if(sport==Sport.ROLLER) {
+				if(vitesse<10){
+					met = 6;
+				}
+				else if(vitesse>10){
+					met = 7;
+				}
+		}
+		return met;
+	}
+
 	
 	
 }

@@ -2,6 +2,10 @@ package com.makeursport.gestionCourse;
 
 import java.util.Calendar;
 
+/**
+ * Stockage d'un sportif
+ *
+ */
 public class Sportif {
 	
 	private int anneeNaissance;

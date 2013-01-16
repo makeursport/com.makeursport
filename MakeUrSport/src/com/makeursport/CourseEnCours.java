@@ -1,17 +1,17 @@
 package com.makeursport;
 
-import java.util.Date;
+import java.util.ArrayList;
 import java.util.Iterator;
 
 import com.actionbarsherlock.app.SherlockFragment;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuInflater;
 import com.actionbarsherlock.view.MenuItem;
-import com.google.android.gms.common.GooglePlayServicesClient;
 import com.google.android.gms.maps.GoogleMapOptions;
-import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.LatLng;
 import com.makeursport.gestionCourse.Course;
 import com.makeursport.gestionCourse.EtatCourse;
+import com.makeursport.gestionCourse.GestionnaireCourse;
 import com.makeursport.gestionCourse.Sport;
 import com.makeursport.gestionCourse.Sportif;
 import com.slidingmenu.lib.app.SlidingFragmentActivity;
@@ -20,15 +20,12 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.location.Criteria;
 import android.location.GpsSatellite;
 import android.location.GpsStatus;
 import android.location.GpsStatus.Listener;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
-import android.location.LocationProvider;
-import android.opengl.Visibility;
 import android.os.Bundle;
 import android.os.Handler;
 import android.preference.PreferenceManager;
@@ -38,9 +35,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AlphaAnimation;
-import android.view.animation.Animation;
-import android.view.animation.Animation.AnimationListener;
-import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 /*
@@ -60,8 +54,7 @@ import android.widget.Toast;
 
 /**
  * Activité de la CourseEnCours
- * affiche les infos, la carte etc. d'une course en cours
- * gère la mise ç jour de ces infos en temps réel<br/>
+ * Gère l'affichage des infos d'une course, gérer par un @{link GestionnaireCourse}
  * Implémente {@link LocationListener} de manière à être informer lorsque
  * la position de l'utilisateur change, et {@link GpsStatus.Listener} pour être informer
  * de l'état du GPS en temps réel
@@ -74,9 +67,10 @@ public class CourseEnCours extends SherlockFragment implements LocationListener,
 	 */
 	private final String LOGCAT_TAG=this.getClass().getCanonicalName();
 	/**
-	 * La course en cours
+	 * Le gestionnaire de la course en cours
 	 */
-	private Course maCourse;
+	private GestionnaireCourse gestCourse;
+	//private Course maCourse;
 	/**
 	 * Le location manager gérant la localisation
 	 */
@@ -121,11 +115,15 @@ public class CourseEnCours extends SherlockFragment implements LocationListener,
 	 */
 	private Location dernierePosition = null;
 	
+	public static final String PARCOURS = "com.makeursport.PARCOURS";
+	public static final String SPORT_INTENT = "com.makeusrport.SPORTINTENT";
+	public static final int DIALOG_SPORTIF_REQUEST_CODE =7;
+	public static final int DIALOG_SPORT_REQUEST_CODE = 8;
 	@Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		super.onCreateView(inflater, container, savedInstanceState);
-		this.maCourse=new Course();
-	    
+		this.gestCourse=new GestionnaireCourse();
+
 		SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(this.getActivity());
 	      //  pref.edit().clear().commit();
 
@@ -139,7 +137,7 @@ public class CourseEnCours extends SherlockFragment implements LocationListener,
         	Intent demarrerDialogSportif = new Intent(this.getActivity(),SportifDialogActivity.class);
         	//Le startActivityForResult demarre le dialog mais se met en attente d'une réponse
         	//De façon à pouvoir traiter si l'utilisateur rentre les infos comme prévu
-        	this.startActivityForResult(demarrerDialogSportif, 7);
+        	this.startActivityForResult(demarrerDialogSportif, DIALOG_SPORTIF_REQUEST_CODE);
         }
 	
 		//On met dans sa place réservé, le MapFragment
@@ -150,6 +148,11 @@ public class CourseEnCours extends SherlockFragment implements LocationListener,
 		fm.beginTransaction()
 		.replace(R.id.mapfragment_location, mapFragment)
 		.commit();
+		
+	    if(this.getArguments() != null && this.getArguments().containsKey(PARCOURS)) {
+			ArrayList<LatLng> parcours = this.getArguments().getParcelableArrayList(PARCOURS);
+	    	this.mapFragment.setParcours(parcours);
+	    }
 		
 		//Initialisation du LocationManager
         this.locationManager = (LocationManager)this.getActivity()
@@ -174,80 +177,25 @@ public class CourseEnCours extends SherlockFragment implements LocationListener,
     			taille,
     			poids);
     	Log.d(LOGCAT_TAG,"Utilisateur est née le " + anneeNaissance + ", mesure " + taille + " et pèse " + poids);
-    	this.maCourse.setUser(userSportif);
-		
+    	this.gestCourse.getCourse().setUser(userSportif);
 	}
-	/**
-     * Met a jour les infos de la course
-     * @param caloriesBrulees le nombre de calorie brulées
-     * @param vitesseReelle la vitesse de l'utilisateur
-     * @param distance la distance parcouru
-     */
-    private void mettreAJourCourse(int caloriesBrulees, float vitesseReelle, int distance) {
-    	this.maCourse.setCaloriesBrulees(caloriesBrulees);
-    	this.maCourse.setVitesseReelle(vitesseReelle);
-    	this.maCourse.setDistance(distance);
-    }
-    /**
-     * Demarre la course
-     */
-    private void demarrerCourse() {
-    	Log.d(LOGCAT_TAG, "Course démarrée");
-    	this.maCourse.setDebutCourse(new Date().getTime());
-    	this.maCourse.setDate(new Date());
-    	this.maCourse.setDistance(0);
-    	this.maCourse.setVitesseReelle(0.0f);
-    	this.maCourse.setCaloriesBrulees(0);
-    	this.maCourse.setEtatCourse(EtatCourse.CourseLancee);
-    	menu.findItem(com.makeursport.R.id.BT_playpause)
-				.setIcon(this.getResources().getDrawable(R.drawable.ic_action_pause));
-    }
-    /**
-     * Met une course en pause
-     */
-    private void mettreEnPauseCourse() {
-    	Log.v(LOGCAT_TAG,"Course mise en pause...");
-    	this.maCourse.setEtatCourse(EtatCourse.CourseEnPause);
-    	this.updateHandler.removeCallbacks(runnableMiseAJour);
-		menu.findItem(com.makeursport.R.id.BT_playpause)
-				.setIcon(this.getResources().getDrawable(R.drawable.ic_action_play));
-    }
-    /**
-     * Sort une course de pause
-     */
-    private void reprendreCourse() {
-    	Log.v(LOGCAT_TAG, "Course reprise !");
-    	this.maCourse.setEtatCourse(EtatCourse.CourseLancee);
-    	updateHandler.post(runnableMiseAJour);
-    	menu.findItem(com.makeursport.R.id.BT_playpause)
-				.setIcon(this.getResources().getDrawable(R.drawable.ic_action_pause));
-    	this.mapFragment.demanderNouveauPolyline();
-    }
-    /**
-     * Arrete une course
-     */
-    private void stopperCourse() {
-    	Log.v(LOGCAT_TAG, "Course arrétée.");
-		this.stopperLocationListener();
-		this.maCourse.setEtatCourse(EtatCourse.CourseArretee);
-    	this.updateHandler.removeCallbacks(runnableMiseAJour);
-		menu.findItem(com.makeursport.R.id.BT_playpause)
-				.setIcon(this.getResources().getDrawable(R.drawable.ic_action_play));
-    }
+
     /**
      * Met à jour la vue, en affichant les infos de la course en cours.
      */
     private void mettreAJourView() {
+    	Log.d(LOGCAT_TAG, "Mise à jour de la vue");
+    	Course course = gestCourse.getCourse();
     	TextView vitMoy_tv = (TextView) vuePrincipale.findViewById(R.id.TV_vit_moyenne_valeur);
-    	vitMoy_tv.setText(maCourse.calculerVitesseMoyenne() + "m/s");
+    	vitMoy_tv.setText(course.getVitesseMoyenne() + this.getString(R.string.unite_vitesse));
     	TextView vitReel_tv = (TextView) vuePrincipale.findViewById(R.id.TV_vit_reel_valeur);
-    	vitReel_tv.setText(maCourse.getVitesseReelle() + "m/s");
+    	vitReel_tv.setText(course.getVitesseReelle() + this.getString(R.string.unite_vitesse));
     	TextView calories_tv = (TextView) vuePrincipale.findViewById(R.id.TV_calories_valeur);
-    	calories_tv.setText(maCourse.getCaloriesBrulees() + "");
+    	calories_tv.setText(course.getCaloriesBrulees() + "");
     	TextView distance_tv = (TextView) vuePrincipale.findViewById(R.id.TV_distance_valeur);
-    	distance_tv.setText(maCourse.getDistance() + "km");
+    	distance_tv.setText(course.getDistanceArrondi() + this.getString(R.string.unite_distance));
     	TextView duree_tv = (TextView) vuePrincipale.findViewById(R.id.TV_duree);
-    	long duree = maCourse.getDuree()/1000;//Temps en ms
+    	long duree = course.getDuree();
     	duree_tv.setText(String.format("%d:%02d:%02d", duree/(3600), (duree%3600)/(60), (duree%(60))));
     }
     /**
@@ -264,7 +212,7 @@ public class CourseEnCours extends SherlockFragment implements LocationListener,
     /**
      * Appelé quand on sait que le signal GPS est inactif
      */
-    public void signalerGPSInactif() {
+    private void signalerGPSInactif() {
     	Log.d(LOGCAT_TAG,"En attente du signal GPS...");
     	View voile = this.vuePrincipale.findViewById(R.id.voileInactif);
     	AlphaAnimation animTransparence = new AlphaAnimation(0.0f,1.0f);
@@ -278,22 +226,30 @@ public class CourseEnCours extends SherlockFragment implements LocationListener,
     /**
      * Appelé quand le signal GPS devient actif
      */
-    public void signalerGPSActif() {
+    private void signalerGPSActif() {
     	//Le GPS vient d'être déclaré actif, on démarre la course.
-    	if(this.maCourse.getEtatCourse() == EtatCourse.CourseLancee) {//Si jamais on est en courselancee et qu'on avait pas le GPS activé
+    	if(this.gestCourse.getEtatCourse() == EtatCourse.CourseLancee) {//Si jamais on est en courselancee et qu'on avait pas le GPS activé
     		//Ca veut dire qu'on avait lancé la course et qu'on attendait l'activation du signal GPS
-    		this.demarrerCourse();
+    		this.gestCourse.demarrerCourse();
     	}
     	this.gpsActif=true;
-    	this.vuePrincipale.findViewById(R.id.voileInactif).setVisibility(View.GONE);
-    	this.vuePrincipale.findViewById(R.id.TV_messageInactif).setVisibility(TextView.GONE);
-
+    	cacherVoile();
+    }
+    /**
+     * Cache le "voile" du GPS inactif
+     */
+    private void cacherVoile() {
+    	View voile = this.vuePrincipale.findViewById(R.id.voileInactif);
+    	if(voile.getVisibility()==View.VISIBLE){
+    		voile.setVisibility(View.GONE);
+    		this.vuePrincipale.findViewById(R.id.TV_messageInactif).setVisibility(View.GONE);
+    	}
     }
     /**
      * Met fin à la mise à jour du location listener
      * (démarré à l'aide du {@link CourseEnCours#demarrerLocationListener})
      */
-    public void stopperLocationListener() {
+    private void stopperLocationListener() {
     	locationManager.removeUpdates(this);
     }
 
@@ -303,11 +259,17 @@ public class CourseEnCours extends SherlockFragment implements LocationListener,
      * @param loc la position de l'utilisateur
      */
    	public void onLocationChanged(Location loc) {
-   		if(this.maCourse.getEtatCourse()== EtatCourse.CourseLancee) {
-   			this.mettreAJourCourse(0, loc.getSpeed(), 0);
-   			Log.v(LOGCAT_TAG, "Mise à jour des coordonnées (calories: 0 (TODO), speed:" + maCourse.getVitesseReelle() + ", distance 0 (TODO) )");
+   		if(this.gestCourse.getEtatCourse()== EtatCourse.CourseLancee) {
+   			if(this.dernierePosition!=null) {
+   				Log.d(LOGCAT_TAG + "_OnLocationChanged", "dernierePosition!=null");
+   				float vitesseReelle = loc.getSpeed();
+   				this.gestCourse.mettreAJourCourse(vitesseReelle, this.dernierePosition, loc);
+   			}
+			this.dernierePosition=loc;
    			this.mapFragment.mettreAJourCarte(loc.getLatitude(),loc.getLongitude());
-   			this.mettreAJourView();
+   			if(!this.gpsActif) {
+   				this.signalerGPSActif();
+   			}
    		}
    		else {
    			Log.d(LOGCAT_TAG, "Course en pause... Les infos ne sont pas mise à jour...");
@@ -316,7 +278,7 @@ public class CourseEnCours extends SherlockFragment implements LocationListener,
 	public void onProviderDisabled(String provider) {
 		if(provider.equals(LocationManager.GPS_PROVIDER)) {
 			Toast.makeText(this.getSherlockActivity(), this.getString(R.string.message_erreur_desactivation_GPS), Toast.LENGTH_LONG).show();
-			this.stopperCourse();
+			this.gestCourse.stopperCourse();
 		}
 	}
 	public void onProviderEnabled(String provider) {
@@ -326,6 +288,8 @@ public class CourseEnCours extends SherlockFragment implements LocationListener,
 		Log.d(LOGCAT_TAG+"_onStatusChanged", "Provider:"+provider + " status:" + status);
 	}
 
+
+	
 	public void onGpsStatusChanged(int event) {
 		String sEvent="";
 		switch(event) {
@@ -355,6 +319,7 @@ public class CourseEnCours extends SherlockFragment implements LocationListener,
 		
 		
 	}
+	
 	/**
 	 * Lors d'un clique sur les boutons du menu
 	 */
@@ -365,21 +330,41 @@ public class CourseEnCours extends SherlockFragment implements LocationListener,
 			if(!this.locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
 				Toast.makeText(this.getSherlockActivity(), this.getString(R.string.GPS_desactive), Toast.LENGTH_LONG).show();
 			}
-			if(this.maCourse.getEtatCourse()==EtatCourse.CourseArretee) {
-				this.demarrerCourse();
+			
+			if(this.gestCourse.getEtatCourse()==EtatCourse.CourseArretee) {//Si la course est arrétée : demarrage
+				this.gestCourse.demarrerCourse();
+				this.mapFragment.supprimerMapGesture();
+		    	this.updateHandler.post(runnableMiseAJour);
+		    	this.swapIcons(this.gestCourse.getEtatCourse());
 		    	this.demarrerLocationListener();
 			}
-			else if(this.maCourse.getEtatCourse()==EtatCourse.CourseEnPause){
-				this.reprendreCourse();
+			else if(this.gestCourse.getEtatCourse()==EtatCourse.CourseEnPause){//Si la course est en pause : démarrage
+				this.gestCourse.reprendreCourse();
+				this.mapFragment.activerMapGesture();
+		    	this.swapIcons(this.gestCourse.getEtatCourse());
+		    	this.updateHandler.post(runnableMiseAJour);
+		    	this.mapFragment.demanderNouveauPolyline();
 			}
-			else {
-				this.mettreEnPauseCourse();
+			else {//Sinon : la course est en cours, mettre en pause.
+				this.gestCourse.mettreEnPauseCourse();
+				this.mapFragment.activerMapGesture();
+				this.swapIcons(this.gestCourse.getEtatCourse());
+		    	this.updateHandler.removeCallbacks(runnableMiseAJour);
 			}
 			break;
 		case R.id.BT_stop:
-			if(this.maCourse.getEtatCourse() != EtatCourse.CourseArretee) {
-				this.stopperCourse();
+			if(this.gestCourse.getEtatCourse() != EtatCourse.CourseArretee) {
+				this.gestCourse.stopperCourse();
+		    	this.swapIcons(this.gestCourse.getEtatCourse());
+		    	this.cacherVoile();
+				this.mapFragment.activerMapGesture();
+		    	this.stopperLocationListener();
+		    	this.updateHandler.removeCallbacks(runnableMiseAJour);
 			}
+			break;
+		case R.id.BT_sport:
+			Intent i = new Intent(this.getSherlockActivity(), SportDialog.class);
+			getActivity().startActivityForResult(i,DIALOG_SPORT_REQUEST_CODE);
 			break;
 		//Si l'on appuie sur l'icone de l'appli
 		case android.R.id.home:
@@ -390,12 +375,25 @@ public class CourseEnCours extends SherlockFragment implements LocationListener,
 		}
 		return false;
 	}
-	
-	
+	private void swapIcons(EtatCourse etat) {
+		switch(etat) {
+		case CourseArretee:
+		case CourseEnPause:
+			menu.findItem(com.makeursport.R.id.BT_playpause)
+			.setIcon(this.getResources().getDrawable(R.drawable.ic_action_play));
+			break;
+		case CourseLancee:
+			menu.findItem(com.makeursport.R.id.BT_playpause)
+			.setIcon(this.getResources().getDrawable(R.drawable.ic_action_pause));
+			break;
+			
+		}
+	}
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
 		inflater.inflate(R.menu.activity_course_en_cours, menu);
     	this.menu=menu;
+		changeSportIcone(gestCourse.getCourse().getSport());
     }
 	
 	/**
@@ -408,77 +406,45 @@ public class CourseEnCours extends SherlockFragment implements LocationListener,
 	 */
 	@Override
 	public void onActivityResult(int requestCode, int resultCode, Intent data) {
-		Log.v(this.LOGCAT_TAG, "Starting OnActivityResult from requestCode");
+		Log.v(this.LOGCAT_TAG, "Starting OnActivityResult from requestCode" + requestCode);
 		super.onActivityResult(requestCode, resultCode, data);
-		switch(resultCode) {
-			case Activity.RESULT_CANCELED:
-				Log.d(LOGCAT_TAG, "Le sportif ne veut pas rentrer d'info : fermeture de l'appli");
-				this.getActivity().finish();
+		if(requestCode==DIALOG_SPORTIF_REQUEST_CODE) {
+			switch(resultCode) {
+				case Activity.RESULT_CANCELED:
+					Log.d(LOGCAT_TAG, "Le sportif ne veut pas rentrer d'info : fermeture de l'appli");
+					this.getActivity().finish();
+					break;
+				case Activity.RESULT_OK://Si on a un retour ok
+					this.associerSportifDepuisPrefs();
+					break;
+			}	
+		} else if (requestCode == DIALOG_SPORT_REQUEST_CODE){
+			switch(resultCode) {
+			case Activity.RESULT_OK:
+				int sport =data.getExtras().getInt(SPORT_INTENT);
+				this.gestCourse.getCourse().setSport(Sport.getSport(sport));
+				this.changeSportIcone(Sport.getSport(sport));
 				break;
-			case Activity.RESULT_OK://Si on a un retour ok
-				this.associerSportifDepuisPrefs();
-				break;
-
+			}
 		}
 	}
 
-	public float calculerDistance(Location loc1, Location loc2) {
-	   double earthRadius = 3958.75;
-	   double dLat = Math.toRadians(loc2.getLatitude()-loc1.getLatitude());
-	   double dLng = Math.toRadians(loc2.getLongitude()-loc1.getLongitude());
-	   double a = Math.sin(dLat/2) * Math.sin(dLat/2) +
-	              Math.cos(Math.toRadians(loc1.getLatitude())) * Math.cos(Math.toRadians(loc2.getLatitude())) *
-	              Math.sin(dLng/2) * Math.sin(dLng/2);
-	   double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
-	   double dist = earthRadius * c;
-	
-	   int meterConversion = 1609;
-	
-	   return new Float(dist * meterConversion).floatValue();
+
+	private void changeSportIcone(Sport sport) {
+		int res=R.drawable.ic_action_course;
+		switch(sport) {
+		case COURSE:
+			break;
+		case ROLLER:
+			res=R.drawable.ic_action_roller;
+			break;
+		case VELO:
+			res=R.drawable.ic_action_velo;
+			break;
+		}
+		menu.findItem(com.makeursport.R.id.BT_sport)
+		.setIcon(res);
 	}
 
-
-
-	public double calculerCaloriesBrulees(float poids, long duree, float met) {
-		double nbCaloriesBrulees = 0;	
-		nbCaloriesBrulees = duree*(met*3.5*poids)/200;
-		return nbCaloriesBrulees;
-	}
-	
-	public float getMet(Sport sport, float vitesse){
-		float vitKMH = vitesse * 0.277778F;
-		float met = 0;
-		if(sport==Sport.COURSE) {
-			if(vitKMH<4){
-				met = 2.3F; 
-			}
-			if(vitKMH==4.8){
-				met = 3.3F;
-			}
-			if(vitKMH==5.5){
-				met = 3.6F;
-			}
-			if(vitKMH==10){
-				met = 7.0F;
-			}
-		}
-		else if(sport==Sport.VELO){
-			if(vitKMH<16){
-				met = 4.0F;
-			}
-			if(vitKMH>16){
-				met = 5.5F;
-			}
-		}
-		else if(sport==Sport.ROLLER) {
-				if(vitKMH<10){
-					met = 6;
-				}
-				if(vitKMH>10){
-					met = 7;
-				}
-		}
-		return met;
-	}
 }
 	

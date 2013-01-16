@@ -30,6 +30,7 @@
     </style>
     <style name="Tile.Title">
         <item name="android:layout_weight">0</item>
+        <item name="android:paddingLeft">3dp</item>
         
     </style>
     <style name="Tile.Value" parent="@android:style/TextAppearance.Large">

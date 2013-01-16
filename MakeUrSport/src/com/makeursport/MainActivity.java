@@ -1,41 +1,49 @@
 package com.makeursport;
+import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.util.Log;
 
+import com.google.android.gms.maps.model.LatLng;
 import com.makeursport.R;
 import com.slidingmenu.lib.SlidingMenu;
 import com.slidingmenu.lib.app.SlidingFragmentActivity;
 /*
  * TODO:
- *  -> Gestion du sport (course vs velo vs roller...)
-PAUL  -> Gestion des infos de la course (caloriesbrulée, et distance)
-PAUL  		distance : calcul entre deux positions géoloc : http://stackoverflow.com/questions/837872/calculate-distance-in-meters-when-you-know-longitude-and-latitude-in-java
-PAUL  					du coup, sauvegarde de la dernierePositionConnu dans "Course"
-PAUL  		calories : http://www.ehow.com/how_5021922_measure-calories-burned.html
-PAUL  				   http://en.wikipedia.org/wiki/Metabolic_equivalent
+ *	   -> TTS
+ *	   -> Partage Stats
+ *	   -> Problème d'unité/d'affichage avec la distance et les calories ? TOTEST
+ *
 DAVID  -> Historique
-FLORENT-> Generation Parcours
  */
 /*
  * DONE :
- * OK -> Page de parametre OK
- * OK -> Gestion de la pause (ok ?)
- * OK -> Affichage de ces infos (presque fait)
- * OK -> Afficher sur la map le tracé de la course. (a prioris fait ? Semble bon...)
+ * OK -> Page de parametre
+ * OK -> Gestion de la pause
+ * OK -> Affichage de ces infos
+ * OK -> Afficher sur la map le tracé de la course.
  * OK 	Regler bug :
  * OK		- Quand on met en pause et qu'on reprend, ca trace une ligne
  * OK	depuis l'endroit ou t'as mis en pause jusu'a l'endroit ou t'es.
  * OK	Il faut faire un nouveau polyline quand tu sort de pause.
  * OK		- Quand on recoit pas le signal GPS desuite, on a le chrono
  * OK	qui commence quand même a compter alors qu'on a aucune infos.
+ * OK -> Gestion des infos de la course (caloriesbrulée, et distance)
+ * OK -> Generation Parcours
+ * OK -> Gestion du sport (course vs velo vs roller...)
+ */
+/**
+ * Activité principale de MakeUrsport qui permet de gérer
+ * les différents fragments de l'application
+ *
  */
 public class MainActivity extends SlidingFragmentActivity {
+	public static final int PARCOURSDIALOG_REQUESTCODE = 11;
 	/**
 	 * Tag utilisé pour le LOGCAT (affichage de message quand on debug)
 	 */
-	@SuppressWarnings("unused")
 	private final String LOGCAT_TAG=this.getClass().getCanonicalName();
 	
 	public void onCreate(Bundle savedInstanceState) {
@@ -83,7 +91,34 @@ public class MainActivity extends SlidingFragmentActivity {
 		ViewServer.get(this).setFocusedWindow(this);
 	}
 
+	@Override
+	public void onActivityResult(int requestCode, int resultCode, Intent data) {
+		Log.d(LOGCAT_TAG, "onActivityResult : mainActivity " + requestCode);
+		super.onActivityResult(requestCode, resultCode, data);
+		if(requestCode==PARCOURSDIALOG_REQUESTCODE) {
+			switch(resultCode) {
+			case Activity.RESULT_OK:
+				float dist = data.getFloatExtra(ParcoursDialog.DISTANCE, 0);
+				double lat = data.getDoubleExtra(ParcoursDialog.LATITUDE, 0);
+				double lon = data.getDoubleExtra(ParcoursDialog.LONGITUDE, 0);
+				LatLng ptDepart = new LatLng(lat,lon);
+				Log.d("DIST", dist+"");
+				Log.d("MA LATLNG", "lat:"+ptDepart.latitude + " lon:" + ptDepart.longitude);
+				
+				GenerationParcoursATask parcours = new GenerationParcoursATask(dist,this);
+				parcours.execute(ptDepart);
+				
+				break;
+			case Activity.RESULT_CANCELED:
+				break;
+				default:
+			}		
+		} else {
+			this.getSupportFragmentManager().findFragmentById(R.id.main_layout).onActivityResult(requestCode, resultCode, data);
+		}
 
+		
+	}
 	
 	/**
 	 * Permet d'ouvrir le fragment de courseEnCours, avec les bonnes infos

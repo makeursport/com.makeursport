@@ -3,7 +3,10 @@ package com.makeursport.preferences;
 import android.content.Context;
 import android.preference.EditTextPreference;
 import android.util.AttributeSet;
-
+/**
+ * EditTextPreference qui gere les editText comme des float
+ *
+ */
 public class FloatEditTextPreference extends EditTextPreference {
     public FloatEditTextPreference(Context context) {
         super(context);

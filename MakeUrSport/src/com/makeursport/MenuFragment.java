@@ -15,8 +15,7 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 /**
- * Fragment qui nous permet d'afficher notre menu
- * @author Mickael
+ * Fragment qui nous permet d'afficher notre menu dans le sliding menu
  *
  */
 public class MenuFragment extends ListFragment {
@@ -54,7 +53,8 @@ public class MenuFragment extends ListFragment {
 			}
 			break;
 		case 1:
-			newContent = new TestFragment();
+			Intent intent = new Intent(this.getActivity(), ParcoursDialog.class);
+			getActivity().startActivityForResult(intent, MainActivity.PARCOURSDIALOG_REQUESTCODE);
 			//TODO:newContent = new GenererParcours();
 			break;
 		case 2:
