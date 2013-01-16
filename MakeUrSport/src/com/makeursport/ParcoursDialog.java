@@ -16,18 +16,37 @@ import android.widget.Toast;
 import com.actionbarsherlock.app.SherlockFragmentActivity;
 /**
  * Dialog proposant de séléctionner une distance pour la génération de parcours
- *
+ * @author l'équipe MakeUrSport
+ * 
  */
 public class ParcoursDialog extends SherlockFragmentActivity implements OnClickListener,LocationListener{
-
+	/**
+	 * String permettant de gerer les transfert de la distance entre les fragment/activity
+	 */
 	public final static String DISTANCE = "com.makeursport.DISTANCE";
+	/**
+	 * String permettant de gerer les transfert de la latitude (de la loc de l'user) entre les fragments/activity
+	 */
 	public final static String LATITUDE = "com.makeursport.LATITUDE";
+	/**
+	 * String permettant de gerer les transfert de la longitute (de la loc de l'user) entre les fragments/activity
+	 */
 	public final static String LONGITUDE = "com.makeursport.LONGITUDE";
-	
+	/**
+	 * Distance que souhaite parcourir l'user
+	 */
 	private float dist;
+	/**
+	 * Le locationManager qui nous aide a recuperer la localisation de l'utilisateur
+	 */
 	private LocationManager lm;
-	private Criteria critere;
+	/**
+	 * La localisation de l'utilisateur 
+	 */
 	private Location loc = null;
+	/**
+	 * L'EditText permettant de recuperer la distance
+	 */
 	private EditText distET = null;
 	
 	@Override
@@ -41,40 +60,24 @@ public class ParcoursDialog extends SherlockFragmentActivity implements OnClickL
 		cancelBT.setOnClickListener(this);
 		
 		lm = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
-		critere = new Criteria();
-		
-		critere.setAccuracy(Criteria.ACCURACY_FINE);
-		critere.setAltitudeRequired(false);
-		critere.setBearingRequired(true);
-		critere.setCostAllowed(false);
-		critere.setPowerRequirement(Criteria.POWER_MEDIUM);
-		critere.setSpeedRequired(false);
 		
 		lm.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, this);
 	}
 
 	public void onLocationChanged(Location location) {
-		// TODO Auto-generated method stub
 		this.loc = location;
 	}
 
-	public void onProviderDisabled(String provider) {
-		// TODO Auto-generated method stub
-		
-	}
+	public void onProviderDisabled(String provider) {}
 
-	public void onProviderEnabled(String provider) {
-		// TODO Auto-generated method stub
-		
-	}
+	public void onProviderEnabled(String provider) {}
 
-	public void onStatusChanged(String provider, int status, Bundle extras) {
-		// TODO Auto-generated method stub
-		
-	}
+	public void onStatusChanged(String provider, int status, Bundle extras) {}
 	
+	/**
+	 * Lors d'un click sur un des boutons du Dialog
+	 */
 	public void onClick(View v) {
-		// TODO Auto-generated method stub
 		switch (v.getId()) {
 		case R.id.BT_confirm :
 			if (this.loc != null){
@@ -83,8 +86,6 @@ public class ParcoursDialog extends SherlockFragmentActivity implements OnClickL
 				data.putExtra(ParcoursDialog.DISTANCE, this.dist);
 				data.putExtra(ParcoursDialog.LATITUDE, loc.getLatitude());
 				data.putExtra(ParcoursDialog.LONGITUDE, loc.getLongitude());
-				//setResult(RESULT_OK, i);
-				//finish();
 				if (getParent() == null) {
 				    setResult(RESULT_OK, data);
 				} else {
@@ -95,7 +96,6 @@ public class ParcoursDialog extends SherlockFragmentActivity implements OnClickL
 			else {
 				Toast.makeText(this, "Signal GPS invalide", Toast.LENGTH_SHORT).show();
 			}
-			
 			break;
 		case R.id.BT_cancel :
 			finish();

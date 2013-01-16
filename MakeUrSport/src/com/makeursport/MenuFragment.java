@@ -16,7 +16,8 @@ import android.widget.ListView;
 import android.widget.TextView;
 /**
  * Fragment qui nous permet d'afficher notre menu dans le sliding menu
- *
+ * @author L'équipe MakeUrSport
+ * 
  */
 public class MenuFragment extends ListFragment {
 	@Override
@@ -30,6 +31,7 @@ public class MenuFragment extends ListFragment {
 	 * On met dedans les menu que l'on veut voir
 	 * et on l'associe à la liste
 	 */
+	@Override
 	public void onActivityCreated(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
 		MyListAdapter adapter = new MyListAdapter(getActivity());
@@ -58,6 +60,7 @@ public class MenuFragment extends ListFragment {
 			//TODO:newContent = new GenererParcours();
 			break;
 		case 2:
+			newContent= new HistoriqueFragment();
 			//TODO:newContent = new HistoriqueConsultation();
 			break;
 		case 3:
@@ -72,7 +75,7 @@ public class MenuFragment extends ListFragment {
 		}
 	}
 	/**
-	 * Changement de du contenu de notre fenêtre principale
+	 * Changement du contenu de notre fenêtre principale
 	 * @param f le fragment à afficher
 	 */
 	void switchFragment(Fragment f) {

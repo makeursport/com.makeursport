@@ -29,14 +29,18 @@ import android.util.Log;
 
 /**
  * ASyncTask qui permet de gérer la génération de parcours
- * en arrière plan
- * 
+ * en arrière plan, puis affiche une CourseEnCours avec le parcours généré
+ * @author L'équipe MakeUrSport
  */
 public class GenerationParcoursATask extends AsyncTask<LatLng,Void,ArrayList<LatLng>> {
 	private final static String LOGCAT_TAG = "GenerationParcoursDialog";
 	private MainActivity context;	
 	private float dist;
-	
+	/**
+	 * Création de l'AsyncTask 
+	 * @param distance la distance que l'utilisateur souhaite parcourir
+	 * @param context le context de l'activité en cours
+	 */
 	public GenerationParcoursATask(float distance, MainActivity context) {
 		this.dist = distance;
 		this.context=context;
@@ -44,7 +48,6 @@ public class GenerationParcoursATask extends AsyncTask<LatLng,Void,ArrayList<Lat
 	
 	@Override
 	protected ArrayList<LatLng> doInBackground(LatLng... ptDepart) {
-		// TODO Auto-generated method stub
 		ArrayList<LatLng> geoPoints = null;
 		
 		//On génère un angle aléatoire dont la mesure est comprise entre 0 et 360°
@@ -74,10 +77,8 @@ public class GenerationParcoursATask extends AsyncTask<LatLng,Void,ArrayList<Lat
 			geoPoints = decodeEncryptedGeopoints(route);
 		
 		} catch (ClientProtocolException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		return geoPoints;
@@ -94,49 +95,12 @@ public class GenerationParcoursATask extends AsyncTask<LatLng,Void,ArrayList<Lat
 		//carte.dessinerParcours(result);
 	}
 	
-	// Source : http://stackoverflow.com/questions/7622004/android-making-https-request/13485550#13485550 by rposky
-	private HttpClient sslClient(HttpClient client) {
-	    try {
-	        X509TrustManager tm = new X509TrustManager() {
 
-				public void checkClientTrusted(
-						java.security.cert.X509Certificate[] chain,
-						String authType)
-						throws java.security.cert.CertificateException {
-					// TODO Auto-generated method stub
-					
-				}
-
-				public void checkServerTrusted(
-						java.security.cert.X509Certificate[] chain,
-						String authType)
-						throws java.security.cert.CertificateException {
-					// TODO Auto-generated method stub
-					
-				}
-
-				public java.security.cert.X509Certificate[] getAcceptedIssuers() {
-					// TODO Auto-generated method stub
-					return null;
-				}					
-	        };
-	        SSLContext ctx = SSLContext.getInstance("TLS");
-	        ctx.init(null, new TrustManager[]{tm}, null);
-	        SSLSocketFactory ssf = new MySSLSocketFactory(ctx);
-	        ssf.setHostnameVerifier(SSLSocketFactory.ALLOW_ALL_HOSTNAME_VERIFIER);
-	        ClientConnectionManager ccm = client.getConnectionManager();
-	        SchemeRegistry sr = ccm.getSchemeRegistry();
-	        sr.register(new Scheme("https", ssf, 443));
-	        return new DefaultHttpClient(ccm, client.getParams());
-	    } catch (Exception ex) {
-	        return null;
-	    }
-	}
 	
 	/**
 	 * Génère un point de destination aléatoire
-	 * @param pointDepart à partir d'un point de départ
-	 * @param dist et d'une distance donnée
+	 * @param pointDepart le point de départ
+	 * @param dist la distance donnée
 	 * @param angleAleatoire angle aléatoire en DEGRES
 	 * @return le point de destination généré aléatoirement
 	 */
@@ -163,8 +127,8 @@ public class GenerationParcoursATask extends AsyncTask<LatLng,Void,ArrayList<Lat
 	
 	/**
 	 * Fabrique une url pour envoyer une requête HTTP à Google Maps qui renverra les points géographiques
-	 * @param src est le point source
-	 * @param dest est le point de destination
+	 * @param src le point source
+	 * @param dest le point de destination
 	 * @return l'url dont il faut se servir pour exécuter la requête
 	 */
 	private String makeUrl(LatLng src, LatLng dest){
@@ -187,47 +151,86 @@ public class GenerationParcoursATask extends AsyncTask<LatLng,Void,ArrayList<Lat
 	
 	/**
 	 * Décode des points cryptés (algorithme de http://facstaff.unca.edu/mcmcclur/googlemaps/encodepolyline/)
-	 * @param encoded est la chaîne de caractère contenant les points à décoder
+	 * @param encoded la chaîne de caractère contenant les points à décoder
 	 * @return la liste des points décodés
 	 */
 	private ArrayList<LatLng> decodeEncryptedGeopoints(String encoded){
 
-	// get only the encoded geopoints
+	// Recupération des Latitutdes et Longitudes encodés
 	encoded = encoded.split("points:\"")[1].split("\",")[0];
-	// replace two backslashes by one (some error from the transmission)
+	// Remplacement des \\ par des \ pour regler des probleme
 	encoded = encoded.replace("\\\\", "\\");
 	 
-	//decoding
+	//decodage
 	ArrayList<LatLng> poly = new ArrayList<LatLng>();
-	        int index = 0, len = encoded.length();
-	        int lat = 0, lng = 0;
-	 
-	        while (index < len) {
-	            int b, shift = 0, result = 0;
-	            do {
-	                b = encoded.charAt(index++) - 63;
-	                result |= (b & 0x1f) << shift;
-	                shift += 5;
-	            } while (b >= 0x20);
-	            int dlat = ((result & 1) != 0 ? ~(result >> 1) : (result >> 1));
-	            lat += dlat;
-	 
-	            shift = 0;
-	            result = 0;
-	            do {
-	 
-	                b = encoded.charAt(index++) - 63;
-	                result |= (b & 0x1f) << shift;
-	                shift += 5;
-	            } while (b >= 0x20);
-	            int dlng = ((result & 1) != 0 ? ~(result >> 1) : (result >> 1));
-	            lng += dlng;
-	 
-	            LatLng p = new LatLng(lat/1E5,lng/1E5);
-	            poly.add(p);
-	            
-	        }
-	        return poly;
+    int index = 0, len = encoded.length();
+    int lat = 0, lng = 0;
+ 
+        while (index < len) {
+            int b, shift = 0, result = 0;
+            do {
+                b = encoded.charAt(index++) - 63;
+                result |= (b & 0x1f) << shift;
+                shift += 5;
+            } while (b >= 0x20);
+            int dlat = ((result & 1) != 0 ? ~(result >> 1) : (result >> 1));
+            lat += dlat;
+ 
+            shift = 0;
+            result = 0;
+            do {
+ 
+                b = encoded.charAt(index++) - 63;
+                result |= (b & 0x1f) << shift;
+                shift += 5;
+            } while (b >= 0x20);
+            int dlng = ((result & 1) != 0 ? ~(result >> 1) : (result >> 1));
+            lng += dlng;
+ 
+            LatLng p = new LatLng(lat/1E5,lng/1E5);
+            poly.add(p);
+            
+        }
+        return poly;
 	}
+	/**
+	 * Permet de decoder du ssl (https)
+	 * Source : http://stackoverflow.com/questions/7622004/android-making-https-request/13485550#13485550 by rposky
+	 * @param client le HTTPClient à décoder
+	 * @return le nouveau httpClient
+	 */
+	private HttpClient sslClient(HttpClient client) {
+	    try {
+	        X509TrustManager tm = new X509TrustManager() {
 
+				public void checkClientTrusted(
+						java.security.cert.X509Certificate[] chain,
+						String authType)
+						throws java.security.cert.CertificateException {
+					
+				}
+
+				public void checkServerTrusted(
+						java.security.cert.X509Certificate[] chain,
+						String authType)
+						throws java.security.cert.CertificateException {
+					
+				}
+
+				public java.security.cert.X509Certificate[] getAcceptedIssuers() {
+					return null;
+				}					
+	        };
+	        SSLContext ctx = SSLContext.getInstance("TLS");
+	        ctx.init(null, new TrustManager[]{tm}, null);
+	        SSLSocketFactory ssf = new MySSLSocketFactory(ctx);
+	        ssf.setHostnameVerifier(SSLSocketFactory.ALLOW_ALL_HOSTNAME_VERIFIER);
+	        ClientConnectionManager ccm = client.getConnectionManager();
+	        SchemeRegistry sr = ccm.getSchemeRegistry();
+	        sr.register(new Scheme("https", ssf, 443));
+	        return new DefaultHttpClient(ccm, client.getParams());
+	    } catch (Exception ex) {
+	        return null;
+	    }
+	}
 }

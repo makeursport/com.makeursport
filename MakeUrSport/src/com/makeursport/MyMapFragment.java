@@ -28,7 +28,13 @@ import com.google.android.gms.maps.model.PolylineOptions;
  */
 public class MyMapFragment extends SupportMapFragment  {
 	private final String LOGCAT_TAG = this.getClass().getCanonicalName();
+	/**
+	 * La carte GoogleMap que l'on utilise dans ce fragment
+	 */
 	private GoogleMap carte;
+	/**
+	 * Liste des points du parcours généré {@link MyMapFragment#dessinnerParcours()}
+	 */
 	private List<LatLng> pointsParcours;
 	@SuppressWarnings("unused")
 	private Polyline parcoursPolyline;

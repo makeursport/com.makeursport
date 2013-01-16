@@ -6,6 +6,7 @@ import android.util.Log;
 /**
  * Course avec ses différents caractéristiques
  *
+ * @author l'équipe MakeUrSport
  */
 public class Course {
 	private static final String LOGCAT_TAG = "Course";
@@ -19,7 +20,11 @@ public class Course {
 	private EtatCourse etatCourse;
 	private Date date;
 	private Sportif user;
-	
+	private int id;
+		
+	/**
+	 * Création d'une course vide
+	 */
 	public Course() {
 		//debutCourse = new Date().getTime();
 		this.setDistance(0);
@@ -29,9 +34,31 @@ public class Course {
 		this.setDate(new Date());
 		this.setTempsPause(0);
 		this.setSport(Sport.COURSE);
+		this.tempsPause=0;
+	}
+	/**
+	 * Création d'une course à partir de toute ses informations
+	 * @param id l'id de la course
+	 * @param date la date de debut de la course
+	 * @param distance la distance parcouru lors de la course
+	 * @param duree la durée de la course
+	 * @param sport le sport pratiqué
+	 */
+	public Course(int id,long date,double distance ,long duree, Sport sport){
+		this.setDate(date);
+		this.setDistance(distance);
+		this.setSport(sport);
+		this.id=id;
 	}
 
-	
+	/**
+	 * Recuperation de l'id de la course
+	 * @return l'id de la course
+	 */
+	 public int getId() {
+		 return this.id;
+	 }
+	 
 	/**
 	 * @return la durée de la course en seconde
 	 */
@@ -39,8 +66,16 @@ public class Course {
 		return (new Date().getTime() - this.getTempsPause() - this.debutCourse)/1000;
 	}
 
-
 	/**
+	 * Change la date de la course
+	 * @param date la date en ms 
+	 */
+	private void setDate(long date) {
+		this.date=new Date(date);
+	}
+	
+	/**
+	 * Met a jour le debut de la course
 	 * @param debutCourse le moment de début de la course
 	 */
 	public void setDebutCourse(long debutCourse) {
@@ -49,6 +84,7 @@ public class Course {
 
 
 	/**
+	 * Récuperer la durée de temps en pause pendant cette course
 	 * @return la durée pendant laquelle l'utilisateur à été en pause (dans tempsPause)
 	 */
 	public long getTempsPause() {
@@ -56,13 +92,15 @@ public class Course {
 	}
 	
 	/**
-	 * 
+	 * Modifie la durée de temps en pause de cette course
+	 * @param tempsPause le temps en pause 
 	 */
 	public void setTempsPause(long tempsPause) {
 		this.tempsPause=tempsPause;
 	}
 
 	/**
+	 * rajoute une durée au temps de pause
 	 * @param tempsPause rajoute tempsPause au temps que l'on a passé en pause
 	 */
 	public void addTempsPause(long tempsPause) {
@@ -134,19 +172,16 @@ public class Course {
 	 * @return les calories brûlées
 	 */
 	public float getCaloriesBrulees() {
-		float duree = this.getDuree()/60;
+		float duree = ((float)this.getDuree()) /60F;
 		double caloriesBrulees = this.calculerCaloriesBrulees(this.getUser().getPoids(),duree,this.getMet(this.getSport(), this.getVitesseMoyenne()) );
 		
 		return (float) (Math.floor(caloriesBrulees*100)/100);
 
 	}
-
-
-
-	/*public void setCaloriesBrulees(double caloriesBrulees) {
-		this.caloriesBrulees = caloriesBrulees;
-	}*/
-
+	public void sauvegarderCourse() {
+		//GestionnaireHistorique gest = new GestionnaireHistorique();
+		//gest.
+	}
 
 	/**
 	 * recupere l'etat de la course
@@ -192,6 +227,7 @@ public class Course {
 
 
 	/**
+	 * Retourne la date de début de la course
 	 * @return the date
 	 */
 	public Date getDate() {
@@ -199,6 +235,7 @@ public class Course {
 	}
 	
 	/**
+	 * change la date de début de la course
 	 * @param date the date to set
 	 */
 	public void setDate(Date date) {
@@ -230,7 +267,7 @@ public class Course {
 	 * @param met le MET du sport, 
 	 * @return le nombre de calories brûlées par le sportif
 	 */
-	private double calculerCaloriesBrulees(float poids, float duree, float met) {
+	private double calculerCaloriesBrulees(float poids, double duree, float met) {
 		double nbCaloriesBrulees = 0;
 		nbCaloriesBrulees = duree*(met*3.5*poids)/200;
 		return nbCaloriesBrulees;

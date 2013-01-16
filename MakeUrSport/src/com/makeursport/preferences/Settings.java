@@ -11,7 +11,7 @@ import com.makeursport.R;
 /**
  * Activity des paramètre. Utilise l'ancienne API de paramètre
  * car la librairie de compatibilité n'importe pas les nouvelles méthodes
- *
+ * @author L'équipe MakeUrSport
  */
 public class Settings extends SherlockPreferenceActivity {
 

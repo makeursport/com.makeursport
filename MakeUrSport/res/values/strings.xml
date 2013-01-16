@@ -9,6 +9,8 @@
 	<string name="sport_roller">Roller</string>
 	<string name="sport_course">Course</string>
 	
+	<string name="text">-</string>
+	<string name="duree_titre">Durée :</string>
 	<string name="vitmoy_titre">Vitesse moyenne :</string>
 	<string name="vitmoy_par_defaut">0.0km/h</string>
 	<string name="vitreel_titre">Vitesse réel :</string>
@@ -20,6 +22,7 @@
 	<string name="duree_par_defaut">00.00.00</string>
 	<string name="unite_distance">km</string>
 	<string name="unite_vitesse">km/h</string>
+	<string name="unite_heure">h</string>
 	<string name="param_date_naissance">Année de naissance :</string>
 	<string name="param_date_naissance_hint">1993</string>
 	<string name="param_poids">Poids (en kg):</string>

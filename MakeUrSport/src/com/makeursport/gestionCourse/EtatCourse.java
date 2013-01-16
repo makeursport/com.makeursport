@@ -1,7 +1,8 @@
 package com.makeursport.gestionCourse;
 /**
  * Enum des trois état de la course
- *
+ * @author l'équipe MakeUrSport
+ * 
  */
 public enum EtatCourse {
 	CourseLancee(0),

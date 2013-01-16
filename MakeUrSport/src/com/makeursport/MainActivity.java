@@ -14,29 +14,13 @@ import com.slidingmenu.lib.app.SlidingFragmentActivity;
  * TODO:
  *	   -> TTS
  *	   -> Partage Stats
- *	   -> Problème d'unité/d'affichage avec la distance et les calories ? TOTEST
+ *	   -> Problème d'unité avec les calories ? TOTEST
  *
-DAVID  -> Historique
- */
-/*
- * DONE :
- * OK -> Page de parametre
- * OK -> Gestion de la pause
- * OK -> Affichage de ces infos
- * OK -> Afficher sur la map le tracé de la course.
- * OK 	Regler bug :
- * OK		- Quand on met en pause et qu'on reprend, ca trace une ligne
- * OK	depuis l'endroit ou t'as mis en pause jusu'a l'endroit ou t'es.
- * OK	Il faut faire un nouveau polyline quand tu sort de pause.
- * OK		- Quand on recoit pas le signal GPS desuite, on a le chrono
- * OK	qui commence quand même a compter alors qu'on a aucune infos.
- * OK -> Gestion des infos de la course (caloriesbrulée, et distance)
- * OK -> Generation Parcours
- * OK -> Gestion du sport (course vs velo vs roller...)
  */
 /**
- * Activité principale de MakeUrsport qui permet de gérer
+ * Activité principale de MakeUrSport qui permet de gérer
  * les différents fragments de l'application
+ * @author L'équipe MakeUrSport
  *
  */
 public class MainActivity extends SlidingFragmentActivity {
@@ -139,7 +123,10 @@ public class MainActivity extends SlidingFragmentActivity {
         .replace(R.id.main_layout, course)
         .commitAllowingStateLoss();//Et on affiche ce fragment.
 	}*/
-	
+	/**
+	 * Change le contenu du fragment principal
+	 * @param f le nouveau fragment
+	 */
 	public void switchContent(Fragment f) {
 		this.getSupportFragmentManager()
 		.beginTransaction()
@@ -147,5 +134,16 @@ public class MainActivity extends SlidingFragmentActivity {
 		.commit();
 		
 		getSlidingMenu().showContent();
+	}
+	/**
+	 * Rajoute un fragment a la backtrace (quand on fait back on retourne dessus)
+	 * @param f le nouveau fragment
+	 */
+	public void addFragment(Fragment f) {
+		this.getSupportFragmentManager()
+		.beginTransaction()
+		.replace(R.id.main_layout, f)
+		.addToBackStack("AddedFragment")
+		.commit();
 	}
 }

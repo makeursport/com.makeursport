@@ -5,7 +5,7 @@ import android.preference.EditTextPreference;
 import android.util.AttributeSet;
 /**
  * EditTextPreference qui gere les editText comme des float
- *
+ * @author L'équipe MakeUrSport
  */
 public class FloatEditTextPreference extends EditTextPreference {
     public FloatEditTextPreference(Context context) {

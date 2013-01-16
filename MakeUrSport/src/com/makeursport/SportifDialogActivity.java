@@ -19,7 +19,8 @@ import com.actionbarsherlock.app.SherlockFragmentActivity;
  * c'est une activitée
  * Et elle implémente {@link OnClickListener} de façon à pouvoir
  * traiter le retour du click sur les boutons valider/cancel
- * @author Mickael
+ * @author L'équipe MakeUrSport
+ * 
  */
 public class SportifDialogActivity extends SherlockFragmentActivity implements OnClickListener {
 	/**

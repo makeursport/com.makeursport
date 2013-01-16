@@ -6,7 +6,8 @@ import android.location.Location;
 import android.util.Log;
 /**
  * Gestionnaire d'une course précise
- *
+ * @author l'équipe MakeUrSport
+ * 
  */
 public class GestionnaireCourse {
 	private final static String LOGCAT_TAG="GestionnaireCourse";

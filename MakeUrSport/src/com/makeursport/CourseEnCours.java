@@ -37,19 +37,6 @@ import android.view.ViewGroup;
 import android.view.animation.AlphaAnimation;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-/*
- * TODO :
- * 	-> Page de parametre
- *  -> Gestion du sport (course vs velo vs roller...)
- *  -> Gestion des infos de la course (caloriesbrulée, et distance)
- *  		distance : calcul entre deux positions géoloc : http://stackoverflow.com/questions/837872/calculate-distance-in-meters-when-you-know-longitude-and-latitude-in-java
- *  					du coup, sauvegarde de la dernierePositionConnu dans "Course"
- *  		calories : http://www.ehow.com/how_5021922_measure-calories-burned.html
- *  				   http://en.wikipedia.org/wiki/Metabolic_equivalent
- *  -> Gestion de la pause (ok ?)
- *  -> Affichage de ces infos (presque fait)
- *  -> Afficher sur la map le tracé de la course. (a prioris fait ? Semble bon...)
- */
 import android.widget.Toast;
 
 /**
@@ -70,7 +57,6 @@ public class CourseEnCours extends SherlockFragment implements LocationListener,
 	 * Le gestionnaire de la course en cours
 	 */
 	private GestionnaireCourse gestCourse;
-	//private Course maCourse;
 	/**
 	 * Le location manager gérant la localisation
 	 */
@@ -115,9 +101,21 @@ public class CourseEnCours extends SherlockFragment implements LocationListener,
 	 */
 	private Location dernierePosition = null;
 	
+	/**
+	 * String utilisé pour partagé un parcours dans un Bundle
+	 */
 	public static final String PARCOURS = "com.makeursport.PARCOURS";
+	/**
+	 * String utilisé pour partagé un Sport dans un intent
+	 */
 	public static final String SPORT_INTENT = "com.makeusrport.SPORTINTENT";
+	/**
+	 * Numéro de requete utilisé lors du lancement de {@link SportifDialogActivity}
+	 */
 	public static final int DIALOG_SPORTIF_REQUEST_CODE =7;
+	/**
+	 * Numéro de requete utilisé lors du lancement de {@link SportDialog}
+	 */
 	public static final int DIALOG_SPORT_REQUEST_CODE = 8;
 	@Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -131,7 +129,7 @@ public class CourseEnCours extends SherlockFragment implements LocationListener,
         if(pref.contains(this.getString(R.string.SP_annee_naissance))
         		&& pref.contains(this.getString(R.string.SP_poids))
         		&& pref.contains(this.getString(R.string.SP_taille))) {
-        	associerSportifDepuisPrefs();
+        	this.gestCourse.getCourse().setUser(Sportif.fromPrefs(this.getSherlockActivity()));
     	}
         else {//Sinon on ouvre un dialog pour demander d'entrer des infos
         	Intent demarrerDialogSportif = new Intent(this.getActivity(),SportifDialogActivity.class);
@@ -164,21 +162,6 @@ public class CourseEnCours extends SherlockFragment implements LocationListener,
         return this.vuePrincipale;
 	}
 
-	
-	/**
-	 * Associe le sportif à la course depuis les infos des préférences.
-	 */
-    private void associerSportifDepuisPrefs() {
-	     SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this.getActivity());
-	     int anneeNaissance=prefs.getInt(this.getString(R.string.SP_annee_naissance), 0);
-	     int taille=prefs.getInt(this.getString(R.string.SP_taille), 0);
-	     float poids=prefs.getFloat(this.getString(R.string.SP_poids), 0f);
-    	Sportif userSportif = new Sportif(anneeNaissance,
-    			taille,
-    			poids);
-    	Log.d(LOGCAT_TAG,"Utilisateur est née le " + anneeNaissance + ", mesure " + taille + " et pèse " + poids);
-    	this.gestCourse.getCourse().setUser(userSportif);
-	}
 
     /**
      * Met à jour la vue, en affichant les infos de la course en cours.
@@ -375,6 +358,10 @@ public class CourseEnCours extends SherlockFragment implements LocationListener,
 		}
 		return false;
 	}
+	/**
+	 * Echange l'icone play/pause en fonction de l'état de la course
+	 * @param etat l'état dans lequel vient tout juste de rentrer de la course
+	 */
 	private void swapIcons(EtatCourse etat) {
 		switch(etat) {
 		case CourseArretee:
@@ -415,7 +402,7 @@ public class CourseEnCours extends SherlockFragment implements LocationListener,
 					this.getActivity().finish();
 					break;
 				case Activity.RESULT_OK://Si on a un retour ok
-					this.associerSportifDepuisPrefs();
+		        	this.gestCourse.getCourse().setUser(Sportif.fromPrefs(this.getSherlockActivity()));
 					break;
 			}	
 		} else if (requestCode == DIALOG_SPORT_REQUEST_CODE){
@@ -429,7 +416,10 @@ public class CourseEnCours extends SherlockFragment implements LocationListener,
 		}
 	}
 
-
+	/**
+	 * Change l'icone du sport
+	 * @param sport le sport a afficher
+	 */
 	private void changeSportIcone(Sport sport) {
 		int res=R.drawable.ic_action_course;
 		switch(sport) {
@@ -445,6 +435,5 @@ public class CourseEnCours extends SherlockFragment implements LocationListener,
 		menu.findItem(com.makeursport.R.id.BT_sport)
 		.setIcon(res);
 	}
-
 }
 	

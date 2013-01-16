@@ -1,7 +1,8 @@
 package com.makeursport.gestionCourse;
 /**
  * Enum des sports gérer par l'application
- *
+ * @author L'équipe MakeUrSport
+ * 
  */
 public enum Sport {
 	COURSE(0),

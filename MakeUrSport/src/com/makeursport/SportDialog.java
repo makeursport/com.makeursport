@@ -15,6 +15,7 @@ import com.makeursport.gestionCourse.Sport;
 
 /**
  * Dialog permettant de choisir un sport
+ * @author L'équipe MakeUrSport
  */
 public class SportDialog extends SherlockListActivity {
 	@Override
