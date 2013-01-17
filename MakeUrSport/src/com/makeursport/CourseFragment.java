@@ -1,5 +1,6 @@
 package com.makeursport;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
 import android.util.Log;
@@ -52,7 +53,7 @@ public class CourseFragment extends SherlockFragment{
 	    }
 	    
 		//On met dans sa place réservé, le MapFragment
-		FragmentManager fm = getChildFragmentManager(); 
+		FragmentManager fm = this.getChildFragmentManager(); 
 		//Pour creer un nouveau MyMapFragment, on utilise newInstance
 		//Plutôt qu'un constructeur. Conseillé par la doc
 		MyMapFragment mapFragment = MyMapFragment.newInstance(new GoogleMapOptions().zoomControlsEnabled(false));
@@ -64,16 +65,16 @@ public class CourseFragment extends SherlockFragment{
 	    /**
 	     * Requète de récuprération de la course
 	     */
-	    historique=new GestionnaireHistorique(this);
-	    historique.selectionnerCourse(courseId);
+	    this.historique=new GestionnaireHistorique(this);
+	    this.historique.selectionnerCourse(courseId);
 	    
 	    /**
 	     * On associe les vues avec les ressources 
 	     */
-	    vitesseMoy=(TextView)monLayout.findViewById(R.id.TV_vit_moyenne_valeur);
-	    duree=(TextView)monLayout.findViewById(R.id.TV_duree);
-	    distance=(TextView)monLayout.findViewById(R.id.TV_distance_valeur);
-	    calories=(TextView)monLayout.findViewById(R.id.TV_calories_valeur);
+	    this.vitesseMoy=(TextView)monLayout.findViewById(R.id.TV_vit_moyenne_valeur);
+	    this.duree=(TextView)monLayout.findViewById(R.id.TV_duree);
+	    this.distance=(TextView)monLayout.findViewById(R.id.TV_distance_valeur);
+	    this.calories=(TextView)monLayout.findViewById(R.id.TV_calories_valeur);
 	    
 	    
 		this.setHasOptionsMenu(true);//On signal que l'on veut recevoir les appels concernant le menu de l'action bar
@@ -92,22 +93,38 @@ public class CourseFragment extends SherlockFragment{
 	 * @param course la course clickée
 	 */
 	public void modifView(Course course){
-		
-		calories.setText(course.getCaloriesBrulees()+"");
-		distance.setText(course.getDistanceArrondi()+ getString(R.string.unite_distance));
-		vitesseMoy.setText(course.getVitesseMoyenne()+ getString(R.string.unite_vitesse));
-		duree.setText(course.getDuree()+ getString(R.string.unite_heure));
+		this.calories.setText(course.getCaloriesBrulees()+"");
+		this.distance.setText(course.getDistanceArrondi()+ getString(R.string.unite_distance));
+		this.vitesseMoy.setText(course.getVitesseMoyenne()+ getString(R.string.unite_vitesse));
+    	long duree = course.getDuree();
+    	this.duree.setText(String.format("%dh%dm%ds", duree/(3600), (duree%3600)/(60), (duree%(60))));
+
 	}
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch(item.getItemId()) {
 		case R.id.MenuBT_delete:
-			historique.supprimerCourse(courseId);
+			this.historique.supprimerCourse(courseId);
+			break;
+		case R.id.MenuBT_share:
+			Intent i = new Intent(Intent.ACTION_SEND);
+			i.setType("text/plain");
+			//J'ai fait une course de x km en y min, tu peux pas test
+			i.putExtra(Intent.EXTRA_TEXT, this.getString(R.string.mess_partage, distance.getText(), duree.getText()));
+			this.startActivity(Intent.createChooser(i, this.getString(R.string.partage_title)));
 			break;
 		case android.R.id.home:
-			((MainActivity)this.getSherlockActivity()).switchContent(new HistoriqueFragment());
+			this.retourHistoriqueFragment();
 		}
 		return true;
+	}
+
+	public void retourHistoriqueFragment() {
+		FragmentManager fm = this.getSherlockActivity().getSupportFragmentManager();
+		fm.beginTransaction()
+		.remove(this)
+		.commit();
+		fm.popBackStack();
 	}
 
 }

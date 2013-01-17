@@ -74,6 +74,7 @@ public class CourseDS {
 	public long insertInfoCourse(Course c) {
 		long err;
 		ContentValues values = new ContentValues();
+		Log.d(LOGCAT_TAG + "_insertCourse", "Course : date:" + c.getDate().getTime() + " dist:" + c.getDistanceArrondi() + " duree:"+ c.getDuree());
 		values.put(CourseDBHelper.COLUMN_COURSE_DATE, c.getDate().getTime());
 		values.put(CourseDBHelper.COLUMN_COURSE_DISTANCE, c.getDistanceArrondi());
 		values.put(CourseDBHelper.COLUMN_COURSE_DUREE, c.getDuree());
@@ -92,7 +93,7 @@ public class CourseDS {
 	public Course selectCourse(int id){
 		Cursor c = database.query(CourseDBHelper.TABLE_COURSE, colTableCourse,CourseDBHelper.COLUMN_COURSE_ID + " = " + id ,null, null, null, null);
 		Course maCourse = this.transformCursorToCourse(c);
-		Log.d(LOGCAT_TAG,"Selecting course " + id);
+		Log.d(LOGCAT_TAG + "selectCourse", "Course : date:" + maCourse.getDate().getTime() + " dist:" + maCourse.getDistanceArrondi() + " duree:"+ maCourse.getDuree());
 		return maCourse;
 		
 	}
@@ -128,7 +129,10 @@ public class CourseDS {
 		}
 		Course maCourse;
 		c.moveToFirst();
-		maCourse = new Course(c.getInt(CourseDBHelper.NUM_COLUMN_COURSE_ID),c.getInt(CourseDBHelper.NUM_COLUMN_COURSE_DATE), c.getFloat(CourseDBHelper.NUM_COLUMN_COURSE_DISTANCE), c.getLong(CourseDBHelper.NUM_COLUMN_COURSE_DUREE),Sport.getSport(c.getInt(CourseDBHelper.NUM_COLUMN_COURSE_SPORT)));
+		Log.d(LOGCAT_TAG, "Durée : " + c.getLong(CourseDBHelper.NUM_COLUMN_COURSE_DUREE));
+		//maCourse = new Course(c.getInt(CourseDBHelper.NUM_COLUMN_COURSE_ID),c.getLong(CourseDBHelper.NUM_COLUMN_COURSE_DATE), c.getDouble(CourseDBHelper.NUM_COLUMN_COURSE_DISTANCE), c.getLong(CourseDBHelper.NUM_COLUMN_COURSE_DUREE),Sport.getSport(c.getInt(CourseDBHelper.NUM_COLUMN_COURSE_SPORT)));
+		
+		maCourse = new Course(c.getInt(CourseDBHelper.NUM_COLUMN_COURSE_ID), c.getLong(CourseDBHelper.NUM_COLUMN_COURSE_DATE), c.getDouble(CourseDBHelper.NUM_COLUMN_COURSE_DISTANCE), c.getLong(CourseDBHelper.NUM_COLUMN_COURSE_DUREE), Sport.getSport(c.getInt(CourseDBHelper.NUM_COLUMN_COURSE_SPORT)));
 		return maCourse;
 	}
 	/**
@@ -145,7 +149,7 @@ public class CourseDS {
 		ArrayList<Course> maListe = new ArrayList<Course>();
 		c.moveToFirst();
 		for(int i=0;i<c.getCount();i++){
-			maListe.add(new Course(c.getInt(CourseDBHelper.NUM_COLUMN_COURSE_ID),c.getInt(CourseDBHelper.NUM_COLUMN_COURSE_DATE), c.getFloat(CourseDBHelper.NUM_COLUMN_COURSE_DISTANCE), c.getLong(CourseDBHelper.NUM_COLUMN_COURSE_DUREE),Sport.getSport(c.getInt(CourseDBHelper.NUM_COLUMN_COURSE_SPORT))));
+			maListe.add(new Course(c.getInt(CourseDBHelper.NUM_COLUMN_COURSE_ID),c.getLong(CourseDBHelper.NUM_COLUMN_COURSE_DATE), c.getDouble(CourseDBHelper.NUM_COLUMN_COURSE_DISTANCE), c.getLong(CourseDBHelper.NUM_COLUMN_COURSE_DUREE),Sport.getSport(c.getInt(CourseDBHelper.NUM_COLUMN_COURSE_SPORT))));
 			c.moveToNext();
 		}
 		return maListe;

@@ -1,10 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android" >
+    <item android:id="@+id/MenuBT_share"
+        android:title="@string/BT_share"
+        android:icon="@drawable/ic_action_share"
+        android:orderInCategory="1"
+        android:showAsAction="always"/>
     <item
         android:id="@+id/MenuBT_delete"
-        android:title="Delete"
-        android:icon="@android:drawable/ic_menu_delete"
-        android:orderInCategory="1"
+        android:title="@string/BT_delete"
+        android:icon="@drawable/ic_action_delete"
+        android:orderInCategory="50"
         android:showAsAction="always"/>
 
 </menu>

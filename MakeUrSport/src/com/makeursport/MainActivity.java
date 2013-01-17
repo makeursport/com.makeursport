@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
 
 import com.google.android.gms.maps.model.LatLng;
@@ -130,6 +131,7 @@ public class MainActivity extends SlidingFragmentActivity {
 	public void switchContent(Fragment f) {
 		this.getSupportFragmentManager()
 		.beginTransaction()
+		.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
 		.replace(R.id.main_layout, f)
 		.commit();
 		
@@ -142,8 +144,17 @@ public class MainActivity extends SlidingFragmentActivity {
 	public void addFragment(Fragment f) {
 		this.getSupportFragmentManager()
 		.beginTransaction()
+		.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
 		.replace(R.id.main_layout, f)
 		.addToBackStack("AddedFragment")
 		.commit();
+	}
+	public void removeFragment(Fragment f) {
+		this.getSupportFragmentManager()
+		.beginTransaction()
+		.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
+		.remove(f)
+		.commit();
+		this.getSupportFragmentManager().popBackStack();
 	}
 }

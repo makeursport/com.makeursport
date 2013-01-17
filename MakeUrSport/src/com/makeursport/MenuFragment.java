@@ -50,9 +50,7 @@ public class MenuFragment extends ListFragment {
 		Fragment newContent = null;
 		switch (position) {
 		case 0://Course en Cours
-			if(!(this.getFragmentManager().findFragmentById(R.id.main_layout) instanceof CourseEnCours)) {
-		        newContent = new CourseEnCours();
-			}
+	        newContent = new CourseEnCours();
 			break;
 		case 1:
 			Intent intent = new Intent(this.getActivity(), ParcoursDialog.class);
@@ -60,7 +58,9 @@ public class MenuFragment extends ListFragment {
 			//TODO:newContent = new GenererParcours();
 			break;
 		case 2:
-			newContent= new HistoriqueFragment();
+			if(!(this.getFragmentManager().findFragmentById(R.id.main_layout) instanceof HistoriqueFragment)) {
+				newContent= new HistoriqueFragment();
+			}
 			//TODO:newContent = new HistoriqueConsultation();
 			break;
 		case 3:

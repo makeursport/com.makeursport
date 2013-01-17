@@ -1,9 +1,9 @@
 package com.makeursport.gestionCourse;
 
-import java.util.Date;
-
+import android.content.Context;
 import android.location.Location;
 import android.util.Log;
+
 /**
  * Gestionnaire d'une course précise
  * @author l'équipe MakeUrSport
@@ -32,12 +32,10 @@ public class GestionnaireCourse {
     /**
      * Demarre la course
      */
-    public void demarrerCourse() {
+    public void demarrerCourse(Context c) {
     	Log.d(LOGCAT_TAG, "Course démarrée");
-    	this.maCourse.setDebutCourse(new Date().getTime());
-    	this.maCourse.setDate(new Date());
-    	this.maCourse.setDistance(0);
-    	this.maCourse.setVitesseReelle(0.0f);
+    	this.maCourse = new Course();
+    	this.maCourse.setUser(Sportif.fromPrefs(c));
     	this.maCourse.setEtatCourse(EtatCourse.CourseLancee);
     }
     /**

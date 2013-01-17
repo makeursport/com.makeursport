@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import android.content.Context;
 import android.os.AsyncTask;
+import android.support.v4.app.FragmentManager;
 import android.util.Log;
 
 import com.makeursport.CourseFragment;
@@ -33,7 +34,6 @@ public class GestionnaireHistorique {
 	 * Le {@link CourseFragment} depuis lequel notre GestionnaireCourse est lancé
 	 */
 	private CourseFragment courseFragment;
-	
 	/**
 	 * Constructeur par défaut.
 	 * @param context
@@ -150,7 +150,7 @@ public class GestionnaireHistorique {
      	@Override
      	protected void onPostExecute(Void arg) {
      		if (courseFragment.getSherlockActivity() instanceof MainActivity) {
-     			((MainActivity) courseFragment.getSherlockActivity()).switchContent(new HistoriqueFragment());
+     			courseFragment.retourHistoriqueFragment();
      		}
      	}
      }

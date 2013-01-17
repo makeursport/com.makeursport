@@ -1,11 +1,12 @@
 package com.makeursport;
 
 import java.util.ArrayList;
+import java.util.Locale;
 
 import com.makeursport.gestionCourse.Course;
 
 import android.content.Context;
-import android.text.format.DateFormat;
+import java.text.DateFormat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -88,11 +89,12 @@ public class HistoriqueAdapter extends BaseAdapter {
 		TextView dateCourse=(TextView)layout.findViewById(R.id.elem_date);
 		TextView distCourse=(TextView)layout.findViewById(R.id.elem_dist);
 		ImageView sportCourse=(ImageView)layout.findViewById(R.id.elem_icone);
-		TextView idCourse=(TextView) layout.findViewById(R.id.id_course);
+		//TextView idCourse=(TextView) layout.findViewById(R.id.id_course);
 		
 		//On set les contenus 
-		idCourse.setText(this.getItem(position).getId()+"");
-		dateCourse.setText(DateFormat.format("dd/MM/yyyy", this.getItem(position).getDate()));
+		//idCourse.setText(this.getItem(position).getId()+"");
+		DateFormat df = DateFormat.getDateInstance(DateFormat.MEDIUM, Locale.getDefault());
+		dateCourse.setText(df.format(this.getItem(position).getDate()));
 		distCourse.setText(Float.toString(this.getItem(position).getDistanceArrondi()));
 		switch(this.getItem(position).getSport()){
 			case COURSE : sportCourse.setImageDrawable(this.mContext.getResources().getDrawable(R.drawable.ic_action_course));

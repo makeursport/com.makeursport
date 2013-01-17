@@ -2,6 +2,7 @@ package com.makeursport;
 
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.Locale;
 
 import com.actionbarsherlock.app.SherlockFragment;
 import com.actionbarsherlock.view.Menu;
@@ -29,6 +30,7 @@ import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.preference.PreferenceManager;
+import android.speech.tts.TextToSpeech;
 import android.support.v4.app.FragmentManager;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -48,7 +50,7 @@ import android.widget.Toast;
  * @author L'équipe MakeUrSport
  *
  */
-public class CourseEnCours extends SherlockFragment implements LocationListener,Listener {
+public class CourseEnCours extends SherlockFragment implements LocationListener,Listener,TextToSpeech.OnInitListener {
 	/**
 	 * Tag utilisé pour le LOGCAT (affichage de message quand on debug)
 	 */
@@ -73,18 +75,22 @@ public class CourseEnCours extends SherlockFragment implements LocationListener,
 	/**
 	 * Contient le handler qui met a jour la vue toute les xms
 	 */
-	private Handler updateHandler=new Handler();
+	private Handler updateHandler;
 	/**
 	 * Runnable executée toute les x ms par le Handler
 	 */
 	private final Runnable runnableMiseAJour = new Runnable() {
 		public void run() {
+			Log.d(LOGCAT_TAG+"_runnable", "Runnable.run()");
+			int rappelerDans = 0;
 			if(gpsActif) {
 				mettreAJourView();
-				updateHandler.postDelayed(this, 490);
+				rappelerDans=490;
 			} else {
-				Log.d(LOGCAT_TAG,"GPS inactif, pas de mise a jour");
+				Log.d(LOGCAT_TAG+"_runnable","GPS inactif, pas de mise a jour");
+				rappelerDans=1000;
 			}
+			updateHandler.postDelayed(this, rappelerDans);
 		}
 	};
 	/**
@@ -100,6 +106,10 @@ public class CourseEnCours extends SherlockFragment implements LocationListener,
 	 * On enregistre ici la derniere locatlisation connu.
 	 */
 	private Location dernierePosition = null;
+	/**
+	 * Texte à prononcer toutes les 5 mn pendant une course
+	 */
+	private TextToSpeech tts;
 	
 	/**
 	 * String utilisé pour partagé un parcours dans un Bundle
@@ -121,7 +131,9 @@ public class CourseEnCours extends SherlockFragment implements LocationListener,
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		super.onCreateView(inflater, container, savedInstanceState);
 		this.gestCourse=new GestionnaireCourse();
-
+		
+		this.tts = new TextToSpeech(this.getSherlockActivity(),this);
+		
 		SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(this.getActivity());
 	      //  pref.edit().clear().commit();
 
@@ -129,7 +141,7 @@ public class CourseEnCours extends SherlockFragment implements LocationListener,
         if(pref.contains(this.getString(R.string.SP_annee_naissance))
         		&& pref.contains(this.getString(R.string.SP_poids))
         		&& pref.contains(this.getString(R.string.SP_taille))) {
-        	this.gestCourse.getCourse().setUser(Sportif.fromPrefs(this.getSherlockActivity()));
+        	//this.gestCourse.getCourse().setUser(Sportif.fromPrefs(this.getSherlockActivity()));
     	}
         else {//Sinon on ouvre un dialog pour demander d'entrer des infos
         	Intent demarrerDialogSportif = new Intent(this.getActivity(),SportifDialogActivity.class);
@@ -137,7 +149,7 @@ public class CourseEnCours extends SherlockFragment implements LocationListener,
         	//De façon à pouvoir traiter si l'utilisateur rentre les infos comme prévu
         	this.startActivityForResult(demarrerDialogSportif, DIALOG_SPORTIF_REQUEST_CODE);
         }
-	
+
 		//On met dans sa place réservé, le MapFragment
 		FragmentManager fm = getChildFragmentManager(); 
 		//Pour creer un nouveau MyMapFragment, on utilise newInstance
@@ -146,12 +158,12 @@ public class CourseEnCours extends SherlockFragment implements LocationListener,
 		fm.beginTransaction()
 		.replace(R.id.mapfragment_location, mapFragment)
 		.commit();
-		
+
 	    if(this.getArguments() != null && this.getArguments().containsKey(PARCOURS)) {
 			ArrayList<LatLng> parcours = this.getArguments().getParcelableArrayList(PARCOURS);
 	    	this.mapFragment.setParcours(parcours);
 	    }
-		
+
 		//Initialisation du LocationManager
         this.locationManager = (LocationManager)this.getActivity()
         		.getSystemService(Context.LOCATION_SERVICE);
@@ -213,7 +225,7 @@ public class CourseEnCours extends SherlockFragment implements LocationListener,
     	//Le GPS vient d'être déclaré actif, on démarre la course.
     	if(this.gestCourse.getEtatCourse() == EtatCourse.CourseLancee) {//Si jamais on est en courselancee et qu'on avait pas le GPS activé
     		//Ca veut dire qu'on avait lancé la course et qu'on attendait l'activation du signal GPS
-    		this.gestCourse.demarrerCourse();
+    		this.gestCourse.demarrerCourse(this.getSherlockActivity());
     	}
     	this.gpsActif=true;
     	cacherVoile();
@@ -236,7 +248,6 @@ public class CourseEnCours extends SherlockFragment implements LocationListener,
     	locationManager.removeUpdates(this);
     }
 
-
     /**
      * Méthode appelée quand la position de l'utilisateur change
      * @param loc la position de l'utilisateur
@@ -252,6 +263,13 @@ public class CourseEnCours extends SherlockFragment implements LocationListener,
    			this.mapFragment.mettreAJourCarte(loc.getLatitude(),loc.getLongitude());
    			if(!this.gpsActif) {
    				this.signalerGPSActif();
+   			}
+   			//On prononce les performances du sportif toutes les 5 mn
+   			//On vérifie donc si la durée de la course en minutes est un multiple de 5
+   			if ((this.gestCourse.getCourse().getDuree()) % (60*5) == 0
+   					&& this.gestCourse.getCourse().getEtatCourse() == EtatCourse.CourseLancee
+   					&& this.gestCourse.getCourse().getDuree() != 0) {
+   				speakTTS();
    			}
    		}
    		else {
@@ -285,7 +303,7 @@ public class CourseEnCours extends SherlockFragment implements LocationListener,
 			Iterator<GpsSatellite> it = this.locationManager.getGpsStatus(null).getSatellites().iterator();
 			int i=0;
 			while(it.hasNext()) {
-				i++;it.next();	
+				i++;it.next();
 			}
 			sEvent+=" (" + i + " satellites";
 			break;
@@ -299,8 +317,6 @@ public class CourseEnCours extends SherlockFragment implements LocationListener,
 			sEvent="" + event;
 		}
 		Log.v(LOGCAT_TAG+"_onGPSStatusChanged", "Received : " + sEvent);
-		
-		
 	}
 	
 	/**
@@ -313,14 +329,16 @@ public class CourseEnCours extends SherlockFragment implements LocationListener,
 			if(!this.locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
 				Toast.makeText(this.getSherlockActivity(), this.getString(R.string.GPS_desactive), Toast.LENGTH_LONG).show();
 			}
-			
+
 			if(this.gestCourse.getEtatCourse()==EtatCourse.CourseArretee) {//Si la course est arrétée : demarrage
-				this.gestCourse.demarrerCourse();
+				this.gestCourse.demarrerCourse(this.getSherlockActivity());
 				this.mapFragment.supprimerMapGesture();
+				this.updateHandler = new Handler();
 		    	this.updateHandler.post(runnableMiseAJour);
 		    	this.swapIcons(this.gestCourse.getEtatCourse());
 		    	this.demarrerLocationListener();
 			}
+			
 			else if(this.gestCourse.getEtatCourse()==EtatCourse.CourseEnPause){//Si la course est en pause : démarrage
 				this.gestCourse.reprendreCourse();
 				this.mapFragment.activerMapGesture();
@@ -359,6 +377,7 @@ public class CourseEnCours extends SherlockFragment implements LocationListener,
 		}
 		return false;
 	}
+
 	/**
 	 * Echange l'icone play/pause en fonction de l'état de la course
 	 * @param etat l'état dans lequel vient tout juste de rentrer de la course
@@ -435,6 +454,30 @@ public class CourseEnCours extends SherlockFragment implements LocationListener,
 		}
 		menu.findItem(com.makeursport.R.id.BT_sport)
 		.setIcon(res);
+	}
+	@Override
+	public void onDestroyView() {
+		super.onDestroyView();
+		Log.d(LOGCAT_TAG, "Suppression du GPSStatusListener");
+		this.locationManager.removeGpsStatusListener(this);
+	}
+	
+	public void onInit(int status) {
+		if (status == TextToSpeech.SUCCESS) {
+			int result = this.tts.setLanguage(Locale.FRANCE);
+			if (result == TextToSpeech.LANG_MISSING_DATA || result == TextToSpeech.LANG_NOT_SUPPORTED) {
+				Log.e("TTS", "Langue non supportée");
+			}
+		}
+	}
+
+
+	private void speakTTS() {
+		String txt = "Distance : " + this.gestCourse.getCourse().getDistanceArrondi() + ". ";
+		txt += "Durée : " + this.gestCourse.getCourse().getDuree() + ". ";
+		txt += "Vitesse moyenne : " + this.gestCourse.getCourse().getVitesseMoyenne() + ". ";
+		
+		tts.speak(txt, TextToSpeech.QUEUE_FLUSH, null);
 	}
 }
 	

@@ -5,9 +5,13 @@
 	<string name="title_dialog_sportif">Parametre de l\'utilisateur</string>
 	<string name="title_dialog_generer_parcours">Generation de parcours</string>
 	<string name="title_dialog_sport">Choix d\'un sport</string>
+	<string name="partage_title">Partager avec…</string>
 	<string name="sport_velo">Velo</string>
 	<string name="sport_roller">Roller</string>
 	<string name="sport_course">Course</string>
+	
+	<string name="BT_share">Partager</string>
+	<string name="BT_delete">Supprimer</string>
 	
 	<string name="text">-</string>
 	<string name="duree_titre">Durée :</string>
@@ -44,8 +48,8 @@
     <string name="play_service_not_available">Les Google Play Services ne sont pas disponible. Veuillez les telecharger depuis le market</string>
     
     <string name="message_inactif">En attente du signal GPS…</string>
-       
     
+    <string name="mess_partage">J\'ai fait une course de %1$s en %2$s, tu peux pas test !</string>
     <!-- Preferences -->
     <string name="pref_sportif_categ">Sportif</string>
     <string name="pref_sportif_naissance">Année de naissance</string>

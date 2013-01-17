@@ -16,6 +16,7 @@ public class Course {
 	private static final String LOGCAT_TAG = "Course";
 	private Sport sport;
 	private long debutCourse;
+	private long duree;
 	private long tempsPause;
 	private long debutPause;
 	private double distance; //en KM
@@ -34,7 +35,7 @@ public class Course {
 		this.setDistance(0);
 		this.setVitesseReelle(0);
 		//this.setCaloriesBrulees(0);
-		this.setEtatCourse(EtatCourse.CourseArretee);
+		this.etatCourse=EtatCourse.CourseArretee;
 		this.setDate(new Date());
 		this.setTempsPause(0);
 		this.setSport(Sport.COURSE);
@@ -49,12 +50,21 @@ public class Course {
 	 * @param sport le sport pratiqué
 	 */
 	public Course(int id,long date,double distance ,long duree, Sport sport){
-		this.setDate(date);
+		Log.d(LOGCAT_TAG,"Création d'une course : (" + date + ") de " + distance + "km de " + duree + "s");
+		this.setDate(new Date(date));
 		this.setDistance(distance);
 		this.setSport(sport);
+		this.setDuree(duree);
+		this.etatCourse=EtatCourse.CourseArretee;
 		this.id=id;
 	}
-
+	/**
+	 * Met la durée de la course à jour
+	 * @param duree la durée de la course, en millisecondes
+	 */
+	private void setDuree(long duree) {
+		this.duree = duree;
+	}
 	/**
 	 * Recuperation de l'id de la course
 	 * @return l'id de la course
@@ -67,8 +77,12 @@ public class Course {
 	 * @return la durée de la course en seconde
 	 */
 	public long getDuree() {
+		if(this.etatCourse==EtatCourse.CourseArretee) {
+			return this.duree;
+		}
 		return (new Date().getTime() - this.getTempsPause() - this.debutCourse)/1000;
 	}
+	
 
 	/**
 	 * Change la date de la course
@@ -134,6 +148,7 @@ public class Course {
 	 * @return la distance de la course en km, arrondi au centième
 	 */
 	public float getDistanceArrondi() {
+		Log.w(LOGCAT_TAG, this.getDistance() + " : " + (Math.floor(this.getDistance()*100)/100));
 		return (float) (Math.floor(this.getDistance()*100)/100);
 	}
 
@@ -176,6 +191,11 @@ public class Course {
 	 * @return les calories brûlées
 	 */
 	public float getCaloriesBrulees() {
+		if(this.getUser() == null) {
+			Log.e(LOGCAT_TAG,"getUser() == null");
+		} else if(this.getSport()==null) {
+			Log.e(LOGCAT_TAG,"sport==null");
+		}
 		float duree = ((float)this.getDuree()) /60.0F;
 		double caloriesBrulees = this.calculerCaloriesBrulees(this.getUser().getPoids(),duree,this.getMet(this.getSport(), this.getVitesseMoyenne()) );
 		
@@ -186,10 +206,13 @@ public class Course {
 	 * @param context Le context de l'application
 	 */
 	public void sauvegarderCourse(Context context) {
+		Log.d(LOGCAT_TAG, "Sauvegarde de la course...");
 		if(this.getDuree() > 1) {
 			GestionnaireHistorique gest = new GestionnaireHistorique(context);
 			gest.enregistrerCourse(this);
 			Toast.makeText(context, context.getText(R.string.course_sauvegardee), Toast.LENGTH_LONG).show();
+		} else {
+			Log.w(LOGCAT_TAG, "Ou pas : this.getDuree()=" + this.getDuree());
 		}
 	}
 
@@ -212,6 +235,11 @@ public class Course {
 		}
 		else if(this.etatCourse==EtatCourse.CourseLancee && etatCourse==EtatCourse.CourseEnPause) {
 			this.debutPause = new Date().getTime();
+		} else if(this.etatCourse == EtatCourse.CourseArretee && etatCourse == EtatCourse.CourseLancee) {
+			this.setDebutCourse(new Date().getTime());
+		} else if(etatCourse == EtatCourse.CourseArretee) {
+			Log.d(LOGCAT_TAG + "_arretCourse", "On remplace la duree par la duree("+this.getDuree());
+			this.duree = this.getDuree();
 		}
 		this.etatCourse = etatCourse;
 	}
@@ -231,6 +259,7 @@ public class Course {
 	 * @param user le sportif
 	 */
 	public void setUser(Sportif user) {
+		Log.d(LOGCAT_TAG, "mise à jour de l'user");
 		this.user = user;
 	}
 
