@@ -13,11 +13,13 @@ import android.view.ViewGroup;
 import android.widget.Toast;
 
 import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
+import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.GoogleMapOptions;
 import com.google.android.gms.maps.MapsInitializer;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
@@ -27,7 +29,9 @@ import com.google.android.gms.maps.model.PolylineOptions;
  * @see SupportMapFragment
  */
 public class MyMapFragment extends SupportMapFragment  {
+	private static final float TILT_ANGLE = 30;
 	private final String LOGCAT_TAG = this.getClass().getCanonicalName();
+	public static final float ZOOM_LEVEL = 16;
 	/**
 	 * La carte GoogleMap que l'on utilise dans ce fragment
 	 */
@@ -75,18 +79,48 @@ public class MyMapFragment extends SupportMapFragment  {
     /**
      * Initialise la carte (met sur la position de l'utilisateur,
      * zoom, et rajoute la première position dans la liste des points
-     * @param longitude La longitude du sportif
-     * @param latitude La latitude du sportif
      */
     private void initialiserCarte(double latitude, double longitude) {
+    	//this.initialiserCarte();
     	Log.v(LOGCAT_TAG, "Initialisation de la carte ("+latitude+","+longitude+")");
     	LatLng pos = new LatLng(latitude,longitude);
     	traces = new LinkedList<Polyline>();
+    	
     	if(this.carte==null) {
     		Log.e(LOGCAT_TAG+"_mapnull", "Map is null...");
     	}
-    	carte.animateCamera(CameraUpdateFactory.newLatLngZoom(pos, 16));
+    	Log.w(LOGCAT_TAG, "carte zoom before : " + carte.getCameraPosition().zoom);
+    	//carte.moveCamera(CameraUpdateFactory.newLatLngZoom(pos,ZOOM_LEVEL));
+    	//carte.animateCamera(CameraUpdateFactory.zoomTo(ZOOM_LEVEL));
+    	CameraPosition cameraPosition = new CameraPosition.Builder()
+        .target(new LatLng(latitude,longitude))      // Sets the center of the map to Mountain View
+        .zoom(ZOOM_LEVEL)                   // Sets the zoom
+        .build();                   // Creates a CameraPosition from the builder
+    	this.carte.moveCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
+    	
+    	//this.carte.moveCamera(CameraUpdateFactory.newLatLng(pos));
+    	 //this.carte.animateCamera(CameraUpdateFactory.zoomTo(ZOOM_LEVEL));
+    	Log.w(LOGCAT_TAG, "carte zoom after : " +carte.getCameraPosition().zoom);
+    	//carte.clear();
     }
+    
+    /**
+     * Initialise la carte pour une nouvelle course : supprime les différent tracé, sauf le parcours généré
+     * @param longitude La longitude du sportif
+     * @param latitude La latitude du sportif
+     */
+    public void initialiserCartePourNouvelleCourse() {
+    	if(traces != null) {
+        	for(Polyline t : traces) {
+        		t.remove();
+        	}    		
+    	}
+
+    	//carte.clear();
+    	this.traces=null;
+		this.besoinDunNouveauPolyline=true;
+    }
+    
     
     /**
      * Met a jour la carte a partir des coordonnées données
@@ -94,10 +128,11 @@ public class MyMapFragment extends SupportMapFragment  {
      * @param longitude La longitude du sportif
      * @param latitude La latitude du sportif
      */
-    public void mettreAJourCarte(double latitude, double longitude) {
+    public void mettreAJourCarte(double latitude, double longitude, float bearing, float zoom) {
     	//TODO
     	Log.v(LOGCAT_TAG, "Mise à jour de la carte");
     	if(traces==null || traces.isEmpty()) {
+    		Log.d(LOGCAT_TAG, "traces = null or is empty");
     		this.initialiserCarte(latitude, longitude);
     	}
     	if(besoinDunNouveauPolyline) {
@@ -108,7 +143,13 @@ public class MyMapFragment extends SupportMapFragment  {
     	LatLng pos = new LatLng(latitude,longitude);
     	List<LatLng> points = lastTrace.getPoints();
     	points.add(pos);
-        carte.animateCamera(CameraUpdateFactory.newLatLng(pos));
+    	CameraPosition cameraPosition = new CameraPosition.Builder()
+        .target(new LatLng(latitude,longitude))      // Sets the center of the map to Mountain View
+        .zoom(zoom)                   // Sets the zoom
+        .bearing(bearing)                // Sets the orientation of the camera to east
+        .tilt(TILT_ANGLE)                   // Sets the tilt of the camera to 30 degrees
+        .build();                   // Creates a CameraPosition from the builder
+    	this.carte.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
         lastTrace.setPoints(points);
         //traces.set(traces.size(), lastTrace);
     }
@@ -128,7 +169,7 @@ public class MyMapFragment extends SupportMapFragment  {
      */
     private void creerNouveauPolyline(double lat, double lng) {
     	LatLng pos = new LatLng(lat, lng);
-    	traces.add(carte.addPolyline(new PolylineOptions().add(pos).color(Color.BLUE).visible(true)));
+    	traces.add(carte.addPolyline(new PolylineOptions().add(pos).color(getResources().getColor(R.color.holo_blue)).visible(true)));
     }
     /**
      * Methode qui met la carte transparente. Permet de regler un problème de GoogleMaps
@@ -157,11 +198,11 @@ public class MyMapFragment extends SupportMapFragment  {
      */
     private void dessinnerParcours() {
 		//Il ne reste plus qu'à afficher l'itinéraire sur la carte
-		PolylineOptions traceOptions = new PolylineOptions().color(Color.BLUE).visible(true);
+		PolylineOptions traceOptions = new PolylineOptions().color(getResources().getColor(R.color.holo_green)).visible(true);
 		for (LatLng geoPoint : pointsParcours){
 			traceOptions.add(geoPoint);
 		}
-		traceOptions.color(Color.parseColor("#33b5e5"));
+		traceOptions.color(getResources().getColor(R.color.holo_green));
 		if(this.carte==null) {
 			try {
 				MapsInitializer.initialize(this.getActivity().getApplicationContext());
@@ -172,22 +213,31 @@ public class MyMapFragment extends SupportMapFragment  {
 			}
 		}
 		this.parcoursPolyline = this.carte.addPolyline(traceOptions);
-		//this.initialiserCarte(this.pointsParcours.get(0).latitude, this.pointsParcours.get(0).longitude);
+		this.initialiserCarte(this.pointsParcours.get(0).latitude, this.pointsParcours.get(0).longitude);
 		//this.parcours.setPoints(pointsParcours);
     }
     /**
      * Supprime les gestures sur la carte 
      */
-    public void supprimerMapGesture() {
+    public void mettreModeCourse() {
     	//this.carte.getUiSettings().setAllGesturesEnabled(false);
     	this.carte.getUiSettings().setScrollGesturesEnabled(false);
+    	this.carte.getUiSettings().setCompassEnabled(false);
+    	this.carte.getUiSettings().setMyLocationButtonEnabled(false);
     }
     /**
      * Ré-active les gestres sur la carte
      */
-    public void activerMapGesture() {
+    public void arreterModeCourse() {
     	this.carte.getUiSettings().setScrollGesturesEnabled(true);
+    	this.carte.getUiSettings().setCompassEnabled(true);
+    	this.carte.getUiSettings().setMyLocationButtonEnabled(true);
     	//this.carte.getUiSettings().setAllGesturesEnabled(true);
     }
+	public void mettreModeHistorique() {
+		this.carte.getUiSettings().setCompassEnabled(false);
+		this.carte.getUiSettings().setMyLocationButtonEnabled(false);
+		this.carte.setMyLocationEnabled(false);
+	}
 
 }

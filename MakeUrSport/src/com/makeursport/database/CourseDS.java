@@ -9,6 +9,7 @@ import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
+import com.google.android.gms.maps.model.LatLng;
 import com.makeursport.gestionCourse.*;
 import com.makeursport.database.CourseDBHelper;
 import com.makeursport.gestionCourse.Course;
@@ -34,7 +35,7 @@ public class CourseDS {
 	 * La listes des colonnes de la table Courses
 	 * (utilisé pour la selections des courses)
 	 */
-	private String[] colTableCourse = {CourseDBHelper.COLUMN_COURSE_ID,CourseDBHelper.COLUMN_COURSE_DATE,CourseDBHelper.COLUMN_COURSE_DISTANCE,CourseDBHelper.COLUMN_COURSE_DUREE,CourseDBHelper.COLUMN_COURSE_SPORT};
+	private String[] colTableCourse = {CourseDBHelper.COLUMN_COURSE_ID,CourseDBHelper.COLUMN_COURSE_DATE,CourseDBHelper.COLUMN_COURSE_DISTANCE,CourseDBHelper.COLUMN_COURSE_DUREE,CourseDBHelper.COLUMN_COURSE_SPORT, CourseDBHelper.COLUMN_COURSE_LASTPOS_LAT, CourseDBHelper.COLUMN_COURSE_LASTPOS_LNG};
 	
 	/**
 	 * Constructeur de la classe
@@ -71,7 +72,7 @@ public class CourseDS {
 	  * @param c la course a inserer
 	  * @return -1 si il y a une erreur, l'identifiant de la nouvelle colonne sinon
 	  */
-	public long insertInfoCourse(Course c) {
+	public long insertInfoCourse(Course c,LatLng pos) {
 		long err;
 		ContentValues values = new ContentValues();
 		Log.d(LOGCAT_TAG + "_insertCourse", "Course : date:" + c.getDate().getTime() + " dist:" + c.getDistanceArrondi() + " duree:"+ c.getDuree());
@@ -79,6 +80,8 @@ public class CourseDS {
 		values.put(CourseDBHelper.COLUMN_COURSE_DISTANCE, c.getDistanceArrondi());
 		values.put(CourseDBHelper.COLUMN_COURSE_DUREE, c.getDuree());
 		values.put(CourseDBHelper.COLUMN_COURSE_SPORT, c.getSport().getSportInt());
+		values.put(CourseDBHelper.COLUMN_COURSE_LASTPOS_LAT, pos.latitude);
+		values.put(CourseDBHelper.COLUMN_COURSE_LASTPOS_LNG, pos.longitude);
 		err = database.insert(CourseDBHelper.TABLE_COURSE, null, values);
 		if(err==-1) {
 			Log.d(LOGCAT_TAG, "An error occured while inserting values (Course of " + c.getDistanceArrondi() + "km)");
@@ -104,7 +107,7 @@ public class CourseDS {
 	public ArrayList<Course> selectListesCourses() {
 		Cursor c = database.query(CourseDBHelper.TABLE_COURSE, colTableCourse,null, null, null, null,CourseDBHelper.COLUMN_COURSE_ID + " desc",null);
 		ArrayList<Course> maListe = this.transformCursorToListCourse(c);
-		Log.d(LOGCAT_TAG, "Selecting all courses");
+		Log.d(LOGCAT_TAG, "Selection de toutes les courses");
 		return maListe;
 	}
 	/**
@@ -130,9 +133,10 @@ public class CourseDS {
 		Course maCourse;
 		c.moveToFirst();
 		Log.d(LOGCAT_TAG, "Durée : " + c.getLong(CourseDBHelper.NUM_COLUMN_COURSE_DUREE));
-		//maCourse = new Course(c.getInt(CourseDBHelper.NUM_COLUMN_COURSE_ID),c.getLong(CourseDBHelper.NUM_COLUMN_COURSE_DATE), c.getDouble(CourseDBHelper.NUM_COLUMN_COURSE_DISTANCE), c.getLong(CourseDBHelper.NUM_COLUMN_COURSE_DUREE),Sport.getSport(c.getInt(CourseDBHelper.NUM_COLUMN_COURSE_SPORT)));
-		
 		maCourse = new Course(c.getInt(CourseDBHelper.NUM_COLUMN_COURSE_ID), c.getLong(CourseDBHelper.NUM_COLUMN_COURSE_DATE), c.getDouble(CourseDBHelper.NUM_COLUMN_COURSE_DISTANCE), c.getLong(CourseDBHelper.NUM_COLUMN_COURSE_DUREE), Sport.getSport(c.getInt(CourseDBHelper.NUM_COLUMN_COURSE_SPORT)));
+		LatLng lastPos = new LatLng(c.getDouble(CourseDBHelper.NUM_COLUMN_COURSE_LASTPOS_LAT), c.getDouble(CourseDBHelper.NUM_COLUMN_COURSE_LASTPOS_LNG));
+		maCourse.setDernierePos(lastPos);
+		Log.d(LOGCAT_TAG + "_transformcursor", "lat:" + lastPos.latitude + " lng:" + lastPos.longitude);
 		return maCourse;
 	}
 	/**

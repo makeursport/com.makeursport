@@ -133,7 +133,6 @@ public class CourseEnCours extends SherlockFragment implements LocationListener,
 		this.gestCourse=new GestionnaireCourse();
 		
 		this.tts = new TextToSpeech(this.getSherlockActivity(),this);
-		
 		SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(this.getActivity());
 	      //  pref.edit().clear().commit();
 
@@ -260,16 +259,22 @@ public class CourseEnCours extends SherlockFragment implements LocationListener,
    				this.gestCourse.mettreAJourCourse(vitesseReelle, this.dernierePosition, loc);
    			}
 			this.dernierePosition=loc;
-   			this.mapFragment.mettreAJourCarte(loc.getLatitude(),loc.getLongitude());
+   			this.mapFragment.mettreAJourCarte(loc.getLatitude(),loc.getLongitude(),loc.getBearing(), MyMapFragment.ZOOM_LEVEL);
    			if(!this.gpsActif) {
    				this.signalerGPSActif();
    			}
    			//On prononce les performances du sportif toutes les 5 mn
    			//On vérifie donc si la durée de la course en minutes est un multiple de 5
+   			boolean parlePrefs = PreferenceManager.getDefaultSharedPreferences(
+						this.getSherlockActivity()).getBoolean(this.getString(R.string.SP_infos_audio), false);
    			if ((this.gestCourse.getCourse().getDuree()) % (60*5) == 0
    					&& this.gestCourse.getCourse().getEtatCourse() == EtatCourse.CourseLancee
+   					&& parlePrefs
    					&& this.gestCourse.getCourse().getDuree() != 0) {
+   				Log.d(LOGCAT_TAG, "parle !" + parlePrefs);
    				speakTTS();
+   			} else {
+   				Log.d(LOGCAT_TAG, "pas de dictée vocale" + parlePrefs);
    			}
    		}
    		else {
@@ -332,7 +337,8 @@ public class CourseEnCours extends SherlockFragment implements LocationListener,
 
 			if(this.gestCourse.getEtatCourse()==EtatCourse.CourseArretee) {//Si la course est arrétée : demarrage
 				this.gestCourse.demarrerCourse(this.getSherlockActivity());
-				this.mapFragment.supprimerMapGesture();
+				this.mapFragment.initialiserCartePourNouvelleCourse();
+				this.mapFragment.mettreModeCourse();
 				this.updateHandler = new Handler();
 		    	this.updateHandler.post(runnableMiseAJour);
 		    	this.swapIcons(this.gestCourse.getEtatCourse());
@@ -341,14 +347,14 @@ public class CourseEnCours extends SherlockFragment implements LocationListener,
 			
 			else if(this.gestCourse.getEtatCourse()==EtatCourse.CourseEnPause){//Si la course est en pause : démarrage
 				this.gestCourse.reprendreCourse();
-				this.mapFragment.activerMapGesture();
+				this.mapFragment.mettreModeCourse();
 		    	this.swapIcons(this.gestCourse.getEtatCourse());
 		    	this.updateHandler.post(runnableMiseAJour);
 		    	this.mapFragment.demanderNouveauPolyline();
 			}
 			else {//Sinon : la course est en cours, mettre en pause.
 				this.gestCourse.mettreEnPauseCourse();
-				this.mapFragment.activerMapGesture();
+				this.mapFragment.arreterModeCourse();
 				this.swapIcons(this.gestCourse.getEtatCourse());
 		    	this.updateHandler.removeCallbacks(runnableMiseAJour);
 			}
@@ -357,9 +363,10 @@ public class CourseEnCours extends SherlockFragment implements LocationListener,
 			if(this.gestCourse.getEtatCourse() != EtatCourse.CourseArretee) {
 				this.gestCourse.stopperCourse();
 		    	this.swapIcons(this.gestCourse.getEtatCourse());
-		    	this.gestCourse.getCourse().sauvegarderCourse(this.getSherlockActivity());
+		    	LatLng dernPos = new LatLng(dernierePosition.getLatitude(), dernierePosition.getLongitude());
+		    	this.gestCourse.getCourse().sauvegarderCourse(this.getSherlockActivity(),dernPos);
 		    	this.cacherVoile();
-				this.mapFragment.activerMapGesture();
+				this.mapFragment.arreterModeCourse();
 		    	this.stopperLocationListener();
 		    	this.updateHandler.removeCallbacks(runnableMiseAJour);
 			}
@@ -460,6 +467,11 @@ public class CourseEnCours extends SherlockFragment implements LocationListener,
 		super.onDestroyView();
 		Log.d(LOGCAT_TAG, "Suppression du GPSStatusListener");
 		this.locationManager.removeGpsStatusListener(this);
+		if(this.gestCourse.getEtatCourse() == EtatCourse.CourseLancee || this.gestCourse.getEtatCourse()==EtatCourse.CourseEnPause) {
+	    	LatLng dernPos = new LatLng(dernierePosition.getLatitude(), dernierePosition.getLongitude());
+	    	this.gestCourse.getCourse().sauvegarderCourse(this.getSherlockActivity(),dernPos);
+		}
+		this.tts.stop();
 	}
 	
 	public void onInit(int status) {
@@ -471,12 +483,13 @@ public class CourseEnCours extends SherlockFragment implements LocationListener,
 		}
 	}
 
-
+	/**
+	 * Parle en TTS la phrase de message pour indiquer à l'utilisateur comment se déroule sa course
+	 */
 	private void speakTTS() {
-		String txt = "Distance : " + this.gestCourse.getCourse().getDistanceArrondi() + ". ";
-		txt += "Durée : " + this.gestCourse.getCourse().getDuree() + ". ";
-		txt += "Vitesse moyenne : " + this.gestCourse.getCourse().getVitesseMoyenne() + ". ";
-		
+		long d = this.gestCourse.getCourse().getDuree();
+		String duree = String.format("%d:%02d:%02d", d/(3600), (d%3600)/(60), (d%(60)));
+		String txt = this.getString(R.string.message_tts,this.gestCourse.getCourse().getDistanceArrondi(),duree, this.gestCourse.getCourse().getVitesseMoyenne());
 		tts.speak(txt, TextToSpeech.QUEUE_FLUSH, null);
 	}
 }

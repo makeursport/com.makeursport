@@ -7,6 +7,7 @@ import android.os.AsyncTask;
 import android.support.v4.app.FragmentManager;
 import android.util.Log;
 
+import com.google.android.gms.maps.model.LatLng;
 import com.makeursport.CourseFragment;
 import com.makeursport.HistoriqueFragment;
 import com.makeursport.MainActivity;
@@ -62,8 +63,8 @@ public class GestionnaireHistorique {
 	 * Enregistre une course dans la base de données, en arrière plan
 	 * @param course la base de données à executer
 	 */
-	public void enregistrerCourse(Course course) {
-		InsertCourseATask asynctask = new InsertCourseATask();
+	public void enregistrerCourse(Course course, LatLng dernierePos) {
+		InsertCourseATask asynctask = new InsertCourseATask(dernierePos);
 		asynctask.execute(course);
 	}
 	
@@ -123,10 +124,14 @@ public class GestionnaireHistorique {
       */
      private class InsertCourseATask extends AsyncTask<Course,Void ,Void>
      {
+    	 LatLng pos;
+    	public InsertCourseATask(LatLng pos) {
+    		this.pos=pos;
+    	}
      	@Override
      	protected Void doInBackground(Course... course) {
      		bdd.open();
-     		bdd.insertInfoCourse(course[0]); 
+     		bdd.insertInfoCourse(course[0],pos);
      		bdd.close();
      		return null;
      	}

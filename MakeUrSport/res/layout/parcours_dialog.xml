@@ -21,7 +21,13 @@
         android:maxLength="3"
         android:inputType="numberDecimal"
         android:singleLine="true" />
-    
+    <ProgressBar 
+        android:id="@+id/PB_gen_parcours"
+        android:indeterminate="true"
+        android:visibility="invisible"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        />
     <View android:id="@+id/v_separator"
    	    android:layout_width="match_parent"
    	    android:layout_height="1dip"

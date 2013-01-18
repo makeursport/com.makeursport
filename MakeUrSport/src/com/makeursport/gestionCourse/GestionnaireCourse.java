@@ -31,10 +31,14 @@ public class GestionnaireCourse {
     }
     /**
      * Demarre la course
+     * @param c le contexte de l'activité en cours, pour pouvoir récuperer le sportif depuis les préférences
      */
     public void demarrerCourse(Context c) {
     	Log.d(LOGCAT_TAG, "Course démarrée");
+    	//On recupere le Sport mis en place par l'utilisateur
+    	Sport s = this.maCourse.getSport();
     	this.maCourse = new Course();
+    	this.maCourse.setSport(s);
     	this.maCourse.setUser(Sportif.fromPrefs(c));
     	this.maCourse.setEtatCourse(EtatCourse.CourseLancee);
     }

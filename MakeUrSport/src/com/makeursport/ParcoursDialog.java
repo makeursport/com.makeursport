@@ -10,6 +10,7 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.actionbarsherlock.app.SherlockFragmentActivity;
@@ -47,17 +48,21 @@ public class ParcoursDialog extends SherlockFragmentActivity implements OnClickL
 	 * L'EditText permettant de recuperer la distance
 	 */
 	private EditText distET = null;
+	private ProgressBar loading = null;
+	private Button confirmBT = null;
+	private Button cancelBT = null;
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		this.setContentView(R.layout.parcours_dialog);
-		distET = (EditText) this.findViewById(R.id.ET_distance);
-		Button confirmBT = (Button) this.findViewById(R.id.BT_confirm);
-		Button cancelBT = (Button) this.findViewById(R.id.BT_cancel);
+		this.distET = (EditText) this.findViewById(R.id.ET_distance);
+		this.loading = (ProgressBar) this.findViewById(R.id.PB_gen_parcours);
+		confirmBT = (Button) this.findViewById(R.id.BT_confirm);
+		cancelBT = (Button) this.findViewById(R.id.BT_cancel);
 		confirmBT.setOnClickListener(this);
 		cancelBT.setOnClickListener(this);
-		
+
 		lm = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
 		
 		lm.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, this);
@@ -65,6 +70,10 @@ public class ParcoursDialog extends SherlockFragmentActivity implements OnClickL
 
 	public void onLocationChanged(Location location) {
 		this.loc = location;
+		//Si l'utilisateur a cliqué sur confirmé et attend la génération de parcours on ferme le dialogue pour générer le parcours
+		if (this.loading.getVisibility() == View.VISIBLE) {
+			fermerDialog();
+		}
 	}
 
 	public void onProviderDisabled(String provider) {}
@@ -80,26 +89,40 @@ public class ParcoursDialog extends SherlockFragmentActivity implements OnClickL
 		switch (v.getId()) {
 		case R.id.BT_confirm :
 			if (this.loc != null){
-				this.dist = Float.valueOf(this.distET.getText().toString());
-				Intent data = new Intent();
-				data.putExtra(ParcoursDialog.DISTANCE, this.dist);
-				data.putExtra(ParcoursDialog.LATITUDE, loc.getLatitude());
-				data.putExtra(ParcoursDialog.LONGITUDE, loc.getLongitude());
-				if (getParent() == null) {
-				    setResult(RESULT_OK, data);
-				} else {
-				    getParent().setResult(RESULT_OK, data);
+				if (this.loading.getVisibility() == View.VISIBLE) {
+					this.loading.setVisibility(View.GONE);
 				}
-				finish();
+				fermerDialog();
 			}
 			else {
-				Toast.makeText(this, "Signal GPS invalide", Toast.LENGTH_SHORT).show();
+				if (this.loading.getVisibility() != View.VISIBLE) {
+					this.loading.setVisibility(View.VISIBLE);
+					this.confirmBT.setClickable(false);
+				}
 			}
 			break;
 		case R.id.BT_cancel :
 			finish();
 			break;
 		}
+	}
+	
+	/**
+	 * Ferme le dialogue en transmettant les informations nécessaires à la génération de parcours
+	 */
+	private void fermerDialog() {
+		this.dist = Float.valueOf(this.distET.getText().toString());
+		Intent data = new Intent();
+		data.putExtra(ParcoursDialog.DISTANCE, this.dist);
+		data.putExtra(ParcoursDialog.LATITUDE, loc.getLatitude());
+		data.putExtra(ParcoursDialog.LONGITUDE, loc.getLongitude());
+		
+		if (getParent() == null) {
+		    setResult(RESULT_OK, data);
+		} else {
+		    getParent().setResult(RESULT_OK, data);
+		}
+		finish();
 	}
 
 }

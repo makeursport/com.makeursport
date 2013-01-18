@@ -2,6 +2,7 @@ package com.makeursport.gestionCourse;
 
 import java.util.Date;
 
+import com.google.android.gms.maps.model.LatLng;
 import com.makeursport.R;
 
 import android.content.Context;
@@ -26,6 +27,11 @@ public class Course {
 	private Date date;
 	private Sportif user;
 	private int id;
+	/**
+	 * Derniere localisation de l'utilisateur, renseigné uniquement
+	 * si la course est selectionnée depui l'historique.
+	 */
+	private LatLng dernierePos;
 		
 	/**
 	 * Création d'une course vide
@@ -130,9 +136,9 @@ public class Course {
 	 * @return vitesse moyenne de la course en km/h
 	 */
 	public double getVitesseMoyenne () {
-		Log.d(LOGCAT_TAG,"Vitesse Moy : " + (double) this.getDistance() + " / " + (double) this.getDuree()/3600);
-		double vitKms = this.getDistance()*1000 / this.getDuree();
-		return (double) (Math.floor(vitKms/3.6*100)/100);
+		Log.d(LOGCAT_TAG,"Vitesse Moy : " + (double) this.getDistance() + " / " + (double) this.getDuree());
+		double vitKms = this.getDistance() / this.getDuree();
+		return (double) (Math.floor(vitKms*3600*100)/100);
 	}
 
 
@@ -175,7 +181,7 @@ public class Course {
 	public float getVitesseReelle() {
 		return (float) Math.floor((this.vitesseReelle*100)/100);
 	}
-
+	
 
 	/**
 	 * Met à jour la vitesse reel de la course
@@ -197,7 +203,7 @@ public class Course {
 			Log.e(LOGCAT_TAG,"sport==null");
 		}
 		float duree = ((float)this.getDuree()) /60.0F;
-		double caloriesBrulees = this.calculerCaloriesBrulees(this.getUser().getPoids(),duree,this.getMet(this.getSport(), this.getVitesseMoyenne()) );
+		double caloriesBrulees = this.calculCaloriesBrulees(this.getUser().getPoids(),duree,this.getMet(this.getSport(), this.getVitesseMoyenne()) );
 		
 		return (float) (Math.floor(caloriesBrulees*100)/100);
 	}
@@ -205,11 +211,11 @@ public class Course {
 	 * Sauvegarde cette course dans l'historique
 	 * @param context Le context de l'application
 	 */
-	public void sauvegarderCourse(Context context) {
+	public void sauvegarderCourse(Context context, LatLng dernierePosition) {
 		Log.d(LOGCAT_TAG, "Sauvegarde de la course...");
 		if(this.getDuree() > 1) {
 			GestionnaireHistorique gest = new GestionnaireHistorique(context);
-			gest.enregistrerCourse(this);
+			gest.enregistrerCourse(this, dernierePosition);
 			Toast.makeText(context, context.getText(R.string.course_sauvegardee), Toast.LENGTH_LONG).show();
 		} else {
 			Log.w(LOGCAT_TAG, "Ou pas : this.getDuree()=" + this.getDuree());
@@ -238,7 +244,7 @@ public class Course {
 		} else if(this.etatCourse == EtatCourse.CourseArretee && etatCourse == EtatCourse.CourseLancee) {
 			this.setDebutCourse(new Date().getTime());
 		} else if(etatCourse == EtatCourse.CourseArretee) {
-			Log.d(LOGCAT_TAG + "_arretCourse", "On remplace la duree par la duree("+this.getDuree());
+			Log.d(LOGCAT_TAG + "_arretCourse", "On remplace this.duree par la duree("+this.getDuree());
 			this.duree = this.getDuree();
 		}
 		this.etatCourse = etatCourse;
@@ -297,23 +303,34 @@ public class Course {
 		this.sport = sport;
 	}
 
-	
+	/**
+	 * Met à jour la derniree position de l'utilisateur
+	 */
+	public void setDernierePos(LatLng pos) {
+		this.dernierePos=pos;
+	}
+	/**
+	 * Retourne la derniere position de l'utilisateur
+	 */
+	public LatLng getDernierPos() {
+		return this.dernierePos;
+	}
 
 	/**
-	 * Calcul le nombre de calories brulées 
+	 * Calcule le nombre de calories brulées 
 	 * @param poids le poids du sportif en kg
 	 * @param duree la durée de la course en minutes
 	 * @param met le MET du sport, 
 	 * @return le nombre de calories brûlées par le sportif
 	 */
-	private double calculerCaloriesBrulees(float poids, double duree, float met) {
+	private double calculCaloriesBrulees(float poids, double duree, float met) {
 		double nbCaloriesBrulees = 0;
 		nbCaloriesBrulees = duree*(met*3.5*poids)/200;
 		return nbCaloriesBrulees;
 	}
 	
 	/**
-	 * Calcul le MET d'un sport a une vitesse particulière
+	 * Calcule le MET d'un sport à une vitesse particulière
 	 * @param sport le sport pratiqué
 	 * @param vitesse l'allure du sportif (en m/s)
 	 * @return le MET du sport 
@@ -332,13 +349,15 @@ public class Course {
 			}
 			else if(vitesse<=10){
 				met = 7.0F;
+			} else {
+				met = 7.5F;
 			}
 		}
 		else if(sport==Sport.VELO){
 			if(vitesse<16){
 				met = 4.0F;
 			}
-			else if(vitesse>16){
+			else{
 				met = 5.5F;
 			}
 		}
@@ -346,7 +365,7 @@ public class Course {
 				if(vitesse<10){
 					met = 6;
 				}
-				else if(vitesse>10){
+				else {
 					met = 7;
 				}
 		}

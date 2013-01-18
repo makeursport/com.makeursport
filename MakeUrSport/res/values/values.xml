@@ -6,5 +6,6 @@
     <color name="primary_text_light">#000000</color>
     <color name="transparent">#00000000</color>
    	<color name="duree_background_color">#0F000000</color>
-    
+   	<color name="holo_blue">#33b5e5</color>
+    <color name="holo_green">#99CC00</color>
 </resources>

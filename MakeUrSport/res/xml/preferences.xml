@@ -22,11 +22,26 @@
             android:title="@string/pref_sportif_taille"
             android:numeric="integer"
             />
-            
+        <CheckBoxPreference
+            android:key="@string/SP_infos_audio"
+            android:title="@string/pref_infos_audio"
+            android:summaryOn="@string/pref_infos_audio_on"
+            android:summaryOff="@string/pref_infos_audio_off"
+            />
     </PreferenceCategory>
+    <Preference 
+        android:key="@string/pref_manuel"
+        android:title="@string/pref_manuel_title"
+        android:summary="@string/pref_manuel_summary">
+        <intent android:action="android.intent.action.VIEW"
+        	android:data="https://www.dropbox.com/sh/pklok8pndkb8gyz/n8gM30sWGp/Manuel_MakeUrSport.pdf" />
+    </Preference>
     <Preference 
         android:key="@string/pref_link"
         android:title="@string/pref_link_title"
-        android:summary="@string/pref_link_summary"/>
+        android:summary="@string/pref_link_summary">
+        <intent android:action="android.intent.action.VIEW"
+        	android:data="https://github.com/makeursport/com.makeursport" />
+    </Preference>
     
 </PreferenceScreen>

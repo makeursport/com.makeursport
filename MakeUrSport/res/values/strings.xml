@@ -2,8 +2,8 @@
 
     <string name="app_name">MakeUrSport</string>
     <string name="title_activity_course_en_cours">Course En Cours</string>
-	<string name="title_dialog_sportif">Parametre de l\'utilisateur</string>
-	<string name="title_dialog_generer_parcours">Generation de parcours</string>
+	<string name="title_dialog_sportif">Paramètre de l\'utilisateur</string>
+	<string name="title_dialog_generer_parcours">Génération de parcours</string>
 	<string name="title_dialog_sport">Choix d\'un sport</string>
 	<string name="partage_title">Partager avec…</string>
 	<string name="sport_velo">Velo</string>
@@ -13,7 +13,6 @@
 	<string name="BT_share">Partager</string>
 	<string name="BT_delete">Supprimer</string>
 	
-	<string name="text">-</string>
 	<string name="duree_titre">Durée :</string>
 	<string name="vitmoy_titre">Vitesse moyenne :</string>
 	<string name="vitmoy_par_defaut">0.0km/h</string>
@@ -35,21 +34,27 @@
 	<string name="param_taille_hint">170</string>
 	<string name="dialog_sportif_cancel_button">Annuler</string>
 	<string name="dialog_sportif_confirm_button">Confirmer</string>
-	<string name="parcours_dialog">Distance du parcours à générer (en km)</string>
-	<string name="param_distance_hint">Distance</string>
+	<string name="parcours_dialog">Distance du parcours aller-retour à générer (en km)</string>
+	<string name="param_distance_hint">Distance (km)</string>
 	<string name="cancel_string">La modification a été annulée</string>
 	<string name="infos_pas_rempli">Veuillez remplir tout les champs</string>
 	<string name="SP_poids">sportif_poids</string>
     <string name="SP_taille">sportif_taille</string>
     <string name="SP_annee_naissance">sportif_annee_naissance</string>
+    <string name="SP_infos_audio">infos_audio</string>
     <string name="course_sauvegardee">Course bien sauvegardée !</string>
     <string name="message_erreur_desactivation_GPS">Cette application necessite le GPS. Merci de le réactiver. Course en cours arrétée.</string>
     <string name="GPS_desactive">Votre GPS est désactivé. Veuillez l\'activé pour pouvoir continuer.</string>
     <string name="play_service_not_available">Les Google Play Services ne sont pas disponible. Veuillez les telecharger depuis le market</string>
-    
+    <string name="histo_course_titre">Course du %1$s de %2$s km</string>
     <string name="message_inactif">En attente du signal GPS…</string>
     
     <string name="mess_partage">J\'ai fait une course de %1$s en %2$s, tu peux pas test !</string>
+    <string name="message_tts">Distance : %1$s kilomètres. Durée : %2$s. Vitesse moyenne : %3$s kilomètres heure.</string>
+
+    <string name="menu_bt_play_pause">Play/Pause</string>
+    <string name="menu_bt_stop">Stop</string>
+    <string name="menu_bt_sport">Choix du sport</string>
     <!-- Preferences -->
     <string name="pref_sportif_categ">Sportif</string>
     <string name="pref_sportif_naissance">Année de naissance</string>
@@ -58,4 +63,10 @@
     <string name="pref_link">pref_link</string>
     <string name="pref_link_title">Source</string>
     <string name="pref_link_summary">Retrouvez les sources sur github en cliquant ici.</string>
+    <string name="pref_infos_audio">Guide audio</string>
+    <string name="pref_infos_audio_on">Vous recevrez des notifications audio à propos de votre course</string>
+	<string name="pref_infos_audio_off">Vous ne recevrez pas de notifications audio à propos de votre course</string>
+	<string name="pref_manuel">Manuel</string>
+	<string name="pref_manuel_title">Besoin d\'aide ?</string>
+	<string name="pref_manuel_summary">Télécharger le manuel d\'utilisation (PDF)</string>
 </resources>

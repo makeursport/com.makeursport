@@ -34,7 +34,7 @@ import android.util.Log;
  */
 public class GenerationParcoursATask extends AsyncTask<LatLng,Void,ArrayList<LatLng>> {
 	private final static String LOGCAT_TAG = "GenerationParcoursDialog";
-	private MainActivity context;	
+	private MainActivity context;
 	private float dist;
 	/**
 	 * Création de l'AsyncTask 
@@ -42,7 +42,7 @@ public class GenerationParcoursATask extends AsyncTask<LatLng,Void,ArrayList<Lat
 	 * @param context le context de l'activité en cours
 	 */
 	public GenerationParcoursATask(float distance, MainActivity context) {
-		this.dist = distance;
+		this.dist = (distance/2)*0.95f;
 		this.context=context;
 	}
 	

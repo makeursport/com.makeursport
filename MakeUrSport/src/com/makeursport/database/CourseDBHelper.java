@@ -20,12 +20,16 @@ public class CourseDBHelper extends SQLiteOpenHelper {
 		public static final String COLUMN_COURSE_DISTANCE="distance";
 		public static final String COLUMN_COURSE_DUREE="duree";
 		public static final String COLUMN_COURSE_SPORT="sport";
+		public static final String COLUMN_COURSE_LASTPOS_LAT="last_pos_lat";
+		public static final String COLUMN_COURSE_LASTPOS_LNG="last_pos_lng";
 		
 		public static final int NUM_COLUMN_COURSE_ID=0;
 		public static final int NUM_COLUMN_COURSE_DATE=1;
 		public static final int NUM_COLUMN_COURSE_DISTANCE=2;
 		public static final int NUM_COLUMN_COURSE_DUREE=3;
 		public static final int NUM_COLUMN_COURSE_SPORT=4;
+		public static final int NUM_COLUMN_COURSE_LASTPOS_LAT=5;
+		public static final int NUM_COLUMN_COURSE_LASTPOS_LNG=6;
 	/**
 	 * Nom du fichier de la course
 	 */
@@ -33,7 +37,7 @@ public class CourseDBHelper extends SQLiteOpenHelper {
 	/**
 	 * Version de notre DB
 	 */
-	private static final int DB_VERSION=1;
+	private static final int DB_VERSION=2;
 	
 	/**
 	 * Requete de création de la table Course
@@ -43,7 +47,9 @@ public class CourseDBHelper extends SQLiteOpenHelper {
 			+ COLUMN_COURSE_DATE + " integer ," 
 			+ COLUMN_COURSE_DISTANCE + " float , "
 			+ COLUMN_COURSE_DUREE + " long , "
-			+ COLUMN_COURSE_SPORT + " integer);";
+			+ COLUMN_COURSE_SPORT + " integer,"
+			+ COLUMN_COURSE_LASTPOS_LAT + " float,"
+			+ COLUMN_COURSE_LASTPOS_LNG + " float);";
 	
 	/**
 	 * Constructeur de la classe

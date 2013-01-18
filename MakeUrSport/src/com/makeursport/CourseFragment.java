@@ -14,6 +14,7 @@ import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuInflater;
 import com.actionbarsherlock.view.MenuItem;
 import com.google.android.gms.maps.GoogleMapOptions;
+import com.google.android.gms.maps.model.CameraPosition;
 import com.makeursport.gestionCourse.Course;
 import com.makeursport.gestionCourse.GestionnaireHistorique;
 /**
@@ -39,8 +40,10 @@ public class CourseFragment extends SherlockFragment{
 	 * L'id de la course en cours
 	 */
 	private int courseId=-1;
-	
-
+	/**
+	 * le fragment ou il y a la map
+	 */
+	MyMapFragment mapFragment;
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		super.onCreateView(inflater, container, savedInstanceState);
 	    View monLayout=inflater.inflate(R.layout.activity_course, container,false);
@@ -56,7 +59,8 @@ public class CourseFragment extends SherlockFragment{
 		FragmentManager fm = this.getChildFragmentManager(); 
 		//Pour creer un nouveau MyMapFragment, on utilise newInstance
 		//Plutôt qu'un constructeur. Conseillé par la doc
-		MyMapFragment mapFragment = MyMapFragment.newInstance(new GoogleMapOptions().zoomControlsEnabled(false));
+		
+		mapFragment = MyMapFragment.newInstance(new GoogleMapOptions().zoomControlsEnabled(false));
 		fm.beginTransaction()
 		.replace(R.id.mapfragment_location, mapFragment)
 		.commit();
@@ -98,7 +102,8 @@ public class CourseFragment extends SherlockFragment{
 		this.vitesseMoy.setText(course.getVitesseMoyenne()+ getString(R.string.unite_vitesse));
     	long duree = course.getDuree();
     	this.duree.setText(String.format("%dh%dm%ds", duree/(3600), (duree%3600)/(60), (duree%(60))));
-
+    	this.mapFragment.mettreAJourCarte(course.getDernierPos().latitude, course.getDernierPos().longitude,0,MyMapFragment.ZOOM_LEVEL-3);
+    	this.mapFragment.mettreModeHistorique();
 	}
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {

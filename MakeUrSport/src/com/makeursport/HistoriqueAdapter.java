@@ -86,22 +86,20 @@ public class HistoriqueAdapter extends BaseAdapter {
 		}
 
 		 //On inflate les vues qui composent l'adapter
-		TextView dateCourse=(TextView)layout.findViewById(R.id.elem_date);
-		TextView distCourse=(TextView)layout.findViewById(R.id.elem_dist);
-		ImageView sportCourse=(ImageView)layout.findViewById(R.id.elem_icone);
+		TextView infosCourse=(TextView)layout.findViewById(R.id.elem_info_course);
+		//ImageView sportCourse=(ImageView)layout.findViewById(R.id.elem_icone);
 		//TextView idCourse=(TextView) layout.findViewById(R.id.id_course);
 		
 		//On set les contenus 
 		//idCourse.setText(this.getItem(position).getId()+"");
 		DateFormat df = DateFormat.getDateInstance(DateFormat.MEDIUM, Locale.getDefault());
-		dateCourse.setText(df.format(this.getItem(position).getDate()));
-		distCourse.setText(Float.toString(this.getItem(position).getDistanceArrondi()));
+		infosCourse.setText(mContext.getString(R.string.histo_course_titre,df.format(this.getItem(position).getDate()), this.getItem(position).getDistanceArrondi() + "" ));
 		switch(this.getItem(position).getSport()){
-			case COURSE : sportCourse.setImageDrawable(this.mContext.getResources().getDrawable(R.drawable.ic_action_course));
+			case COURSE : infosCourse.setCompoundDrawablesWithIntrinsicBounds(this.mContext.getResources().getDrawable(R.drawable.ic_action_course),null,null,null);
 				break;
-			case VELO : sportCourse.setImageDrawable(this.mContext.getResources().getDrawable(R.drawable.ic_action_velo));
+			case VELO : infosCourse.setCompoundDrawablesWithIntrinsicBounds(this.mContext.getResources().getDrawable(R.drawable.ic_action_velo),null,null,null);
 				break;
-			case ROLLER : sportCourse.setImageDrawable(this.mContext.getResources().getDrawable(R.drawable.ic_action_roller));
+			case ROLLER : infosCourse.setCompoundDrawablesWithIntrinsicBounds(this.mContext.getResources().getDrawable(R.drawable.ic_action_roller),null,null,null);
 				break;
 		}
 		
