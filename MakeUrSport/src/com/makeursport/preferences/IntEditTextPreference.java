@@ -6,7 +6,7 @@ import android.util.AttributeSet;
 
 /**
  * Modification de EditTextPreference de façon à pouvoir stocker des Integer
- *
+ * @author L'équipe MakeUrSport
  */
 public class IntEditTextPreference extends EditTextPreference {
 

@@ -1,101 +1,107 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/dialogTagsRoot"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical"
-  	>
-
-    <TextView
-        android:id="@+id/TV_poids"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/param_poids"
-        android:textAppearance="?android:attr/textAppearanceLarge"/>
-       <!-- android:textAppearance="?android:attr/textAppearanceLarge" /> --> 
-
-    <EditText
-        android:id="@+id/ET_poids"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:ems="10"
-        android:hint="@string/param_poids_hint"
-        android:maxLength="4"
-        android:inputType="numberDecimal"
-        android:singleLine="true" >
-
-        <requestFocus />
-    </EditText>
-
-    <TextView
-        android:id="@+id/TV_taille"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/param_taille"
-        android:textAppearance="?android:attr/textAppearanceLarge"/>
-
-
-    <EditText
-        android:id="@+id/ET_taille"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:ems="10"
-        android:hint="@string/param_taille_hint"
-        android:maxLength="4"
-        android:inputType="number"
-        android:singleLine="true" />
-
-    <TextView
-        android:id="@+id/TV_date_naissance"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/param_date_naissance"
-        android:textAppearance="?android:attr/textAppearanceLarge"/>
-        
-
-   	<EditText
-        android:id="@+id/ET_date_naissance"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:ems="10"
-        android:hint="@string/param_date_naissance_hint"
-        android:maxLength="4"
-        android:inputType="date"
-        />
-
-   	<View android:id="@+id/v_separator"
-   	    android:layout_width="match_parent"
-   	    android:layout_height="1dip"
-   	    android:background="@drawable/divider_horizontal_bright"
-   	    />
-	<LinearLayout
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/scrollView1"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" 
-        android:id="@+id/TagsDialog_bottomButtons"
-        style="@style/ButtonBar"
-        >
+        android:layout_height="wrap_content" >
 
-
-
-         <!-- style="?android:attr/buttonBarButtonStyle" -->  
-               <Button
-            android:id="@+id/BT_cancel"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="0.5"
-                           style="@style/BorderLessButtons"
-            android:text="@string/dialog_sportif_cancel_button" />
-
-
-         <!-- style="?android:attr/buttonBarButtonStyle" -->  
-                    <Button
-                   style="@style/BorderLessButtons"
-            android:id="@+id/BT_confirm"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="0.5"
-            android:text="@string/dialog_sportif_confirm_button" />
-
-    </LinearLayout>
-
-</LinearLayout>
+	<LinearLayout 
+	    android:id="@+id/dialogTagsRoot"
+	    android:layout_width="match_parent"
+	    android:layout_height="wrap_content"
+	    android:orientation="vertical"
+	  	>
+	
+	    <TextView
+	        android:id="@+id/TV_poids"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:text="@string/param_poids"
+	        android:textAppearance="?android:attr/textAppearanceLarge"/>
+	       <!-- android:textAppearance="?android:attr/textAppearanceLarge" /> --> 
+	
+	    <EditText
+	        android:id="@+id/ET_poids"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:ems="10"
+	        android:hint="@string/param_poids_hint"
+	        android:maxLength="4"
+	        android:inputType="numberDecimal"
+	        android:singleLine="true" >
+	
+	        <requestFocus />
+	    </EditText>
+	
+	    <TextView
+	        android:id="@+id/TV_taille"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:text="@string/param_taille"
+	        android:textAppearance="?android:attr/textAppearanceLarge"/>
+	
+	
+	    <EditText
+	        android:id="@+id/ET_taille"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:ems="10"
+	        android:hint="@string/param_taille_hint"
+	        android:maxLength="4"
+	        android:inputType="number"
+	        android:singleLine="true" />
+	
+	    <TextView
+	        android:id="@+id/TV_date_naissance"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:text="@string/param_date_naissance"
+	        android:textAppearance="?android:attr/textAppearanceLarge"/>
+	        
+	
+	   	<EditText
+	        android:id="@+id/ET_date_naissance"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:ems="10"
+	        android:hint="@string/param_date_naissance_hint"
+	        android:maxLength="4"
+	        android:inputType="date"
+	        />
+	
+	   	<View android:id="@+id/v_separator"
+	   	    android:layout_width="match_parent"
+	   	    android:layout_height="1dip"
+	   	    android:background="@drawable/divider_horizontal_bright"
+	   	    />
+		<LinearLayout
+	        android:layout_width="match_parent"
+	        android:layout_height="wrap_content" 
+	        android:id="@+id/TagsDialog_bottomButtons"
+	        style="@style/ButtonBar"
+	        >
+	
+	
+	
+	         <!-- style="?android:attr/buttonBarButtonStyle" -->  
+	               <Button
+	            android:id="@+id/BT_cancel"
+	            android:layout_width="wrap_content"
+	            android:layout_height="wrap_content"
+	            android:layout_weight="0.5"
+	                           style="@style/BorderLessButtons"
+	            android:text="@string/dialog_sportif_cancel_button" />
+	
+	
+	         <!-- style="?android:attr/buttonBarButtonStyle" -->  
+	                    <Button
+	                   style="@style/BorderLessButtons"
+	            android:id="@+id/BT_confirm"
+	            android:layout_width="wrap_content"
+	            android:layout_height="wrap_content"
+	            android:layout_weight="0.5"
+	            android:text="@string/dialog_sportif_confirm_button" />
+	
+	    </LinearLayout>
+	
+	</LinearLayout>
+</ScrollView>

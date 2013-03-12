@@ -3,7 +3,6 @@ package com.makeursport;
 import java.util.LinkedList;
 import java.util.List;
 
-import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -13,7 +12,6 @@ import android.view.ViewGroup;
 import android.widget.Toast;
 
 import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
-import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.GoogleMapOptions;
@@ -29,9 +27,15 @@ import com.google.android.gms.maps.model.PolylineOptions;
  * @see SupportMapFragment
  */
 public class MyMapFragment extends SupportMapFragment  {
-	private static final float TILT_ANGLE = 30;
 	private final String LOGCAT_TAG = this.getClass().getCanonicalName();
+	/**
+	 * Le niveau de base de Zoom a appliqué
+	 */
 	public static final float ZOOM_LEVEL = 16;
+	/**
+	 * L'angle de base a appliqué lors de la vision d'une course dans l'historique
+	 */
+	private static final float TILT_ANGLE = 30;
 	/**
 	 * La carte GoogleMap que l'on utilise dans ce fragment
 	 */
@@ -69,6 +73,10 @@ public class MyMapFragment extends SupportMapFragment  {
     	View view = super.onCreateView(inflater, container, savedInstanceState);
     	setMapTransparent((ViewGroup) view);
     	carte = this.getMap();
+    	if(carte==null) {
+    		this.initialiserCarte();
+
+    	}
     	carte.setMyLocationEnabled(true);//On souhaite afficher la position de l'utilisateur
     	
     	if(pointsParcours!=null) {
@@ -83,11 +91,11 @@ public class MyMapFragment extends SupportMapFragment  {
     private void initialiserCarte(double latitude, double longitude) {
     	//this.initialiserCarte();
     	Log.v(LOGCAT_TAG, "Initialisation de la carte ("+latitude+","+longitude+")");
-    	LatLng pos = new LatLng(latitude,longitude);
     	traces = new LinkedList<Polyline>();
     	
     	if(this.carte==null) {
     		Log.e(LOGCAT_TAG+"_mapnull", "Map is null...");
+    		this.initialiserCarte();
     	}
     	Log.w(LOGCAT_TAG, "carte zoom before : " + carte.getCameraPosition().zoom);
     	//carte.moveCamera(CameraUpdateFactory.newLatLngZoom(pos,ZOOM_LEVEL));
@@ -115,8 +123,6 @@ public class MyMapFragment extends SupportMapFragment  {
         		t.remove();
         	}    		
     	}
-
-    	//carte.clear();
     	this.traces=null;
 		this.besoinDunNouveauPolyline=true;
     }
@@ -129,7 +135,6 @@ public class MyMapFragment extends SupportMapFragment  {
      * @param latitude La latitude du sportif
      */
     public void mettreAJourCarte(double latitude, double longitude, float bearing, float zoom) {
-    	//TODO
     	Log.v(LOGCAT_TAG, "Mise à jour de la carte");
     	if(traces==null || traces.isEmpty()) {
     		Log.d(LOGCAT_TAG, "traces = null or is empty");
@@ -217,7 +222,7 @@ public class MyMapFragment extends SupportMapFragment  {
 		//this.parcours.setPoints(pointsParcours);
     }
     /**
-     * Supprime les gestures sur la carte 
+     * Met la carte en mode course
      */
     public void mettreModeCourse() {
     	//this.carte.getUiSettings().setAllGesturesEnabled(false);
@@ -226,7 +231,7 @@ public class MyMapFragment extends SupportMapFragment  {
     	this.carte.getUiSettings().setMyLocationButtonEnabled(false);
     }
     /**
-     * Ré-active les gestres sur la carte
+     * Ré-affiche toutes les infos normales de la carte
      */
     public void arreterModeCourse() {
     	this.carte.getUiSettings().setScrollGesturesEnabled(true);
@@ -234,10 +239,21 @@ public class MyMapFragment extends SupportMapFragment  {
     	this.carte.getUiSettings().setMyLocationButtonEnabled(true);
     	//this.carte.getUiSettings().setAllGesturesEnabled(true);
     }
+    /**
+     * Met la carte en mode historique, en cachant certaines infos.
+     */
 	public void mettreModeHistorique() {
 		this.carte.getUiSettings().setCompassEnabled(false);
 		this.carte.getUiSettings().setMyLocationButtonEnabled(false);
 		this.carte.setMyLocationEnabled(false);
 	}
-
+	private void initialiserCarte() {
+    		try {
+				MapsInitializer.initialize(this.getActivity().getApplicationContext());
+				this.carte = this.getMap();
+			} catch (GooglePlayServicesNotAvailableException e) {
+				Toast.makeText(this.getActivity(), this.getString(R.string.play_service_not_available), Toast.LENGTH_LONG).show();
+				e.printStackTrace();
+			}
+	}
 }

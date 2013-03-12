@@ -34,7 +34,7 @@
         android:title="@string/pref_manuel_title"
         android:summary="@string/pref_manuel_summary">
         <intent android:action="android.intent.action.VIEW"
-        	android:data="https://www.dropbox.com/sh/pklok8pndkb8gyz/n8gM30sWGp/Manuel_MakeUrSport.pdf" />
+        	android:data="http://dl.dropbox.com/u/9708459/Manuel_MakeUrSport_light.pdf" />
     </Preference>
     <Preference 
         android:key="@string/pref_link"

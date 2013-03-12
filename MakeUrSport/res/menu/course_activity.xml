@@ -5,11 +5,31 @@
         android:icon="@drawable/ic_action_share"
         android:orderInCategory="1"
         android:showAsAction="always"/>
-    <item
-        android:id="@+id/MenuBT_delete"
-        android:title="@string/BT_delete"
-        android:icon="@drawable/ic_action_delete"
-        android:orderInCategory="50"
-        android:showAsAction="always"/>
+            <item android:id="@+id/deleteMenu"
+            android:title="@string/BT_delete_menu"
+            android:icon="@drawable/ic_action_delete"
+            android:orderInCategory="50"
+            android:showAsAction="never">
+            <menu>
+				<item android:id="@+id/MenuBT_delete_confirm"
+		             android:title="@string/BT_delete_menu_confirm"
+		             android:icon="@drawable/ic_action_delete"
+		             android:orderInCategory="1"
+		             android:showAsAction="never">
+		        </item>
+		        <item android:id="@+id/deleteCancelMenuBT"
+		             android:title="@string/BT_delete_menu_cancel"
+		             android:icon="@drawable/ic_navigation_cancel"
+		             android:orderInCategory="2"
+		             android:showAsAction="never">
+		         </item>
+            </menu>
+        </item>
+<!--    <item -->
+<!--         android:id="@+id/MenuBT_delete" -->
+<!--         android:title="@string/BT_delete" -->
+<!--         android:icon="@drawable/ic_action_delete" -->
+<!--         android:orderInCategory="50" -->
+<!--         android:showAsAction="always"/> -->
 
 </menu>

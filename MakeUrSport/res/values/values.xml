@@ -8,4 +8,5 @@
    	<color name="duree_background_color">#0F000000</color>
    	<color name="holo_blue">#33b5e5</color>
     <color name="holo_green">#99CC00</color>
+    <color name="white">#fff</color>
 </resources>

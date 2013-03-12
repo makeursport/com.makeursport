@@ -15,17 +15,49 @@ import android.widget.Toast;
  */
 public class Course {
 	private static final String LOGCAT_TAG = "Course";
+	/**
+	 * Le sport pratiqué pour cette course
+	 */
 	private Sport sport;
+	/**
+	 * Le debut de la course en ms
+	 */
 	private long debutCourse;
+	/**
+	 * La durée de la course (mis a jour que lorsqu'une course est finie) en s
+	 */
 	private long duree;
+	/**
+	 * Le temps mis en pause pendant une course en ms
+	 */
 	private long tempsPause;
+	/**
+	 * Le timestamp au moment ou on a mis la course en pause (ms)
+	 */
 	private long debutPause;
+	/**
+	 * La distance parcouru lors de cette course, en KM
+	 */
 	private double distance; //en KM
+	/**
+	 * La vitesse reelle de l'utilisateur en KM/H
+	 */
 	private float vitesseReelle; //en KM/H
-	//private double caloriesBrulees; //trouver la formule
+	/**
+	 * L'etat de la course en ce moment
+	 */
 	private EtatCourse etatCourse;
+	/**
+	 * La date de la course
+	 */
 	private Date date;
+	/**
+	 * Le sportif pratiquant le sport
+	 */
 	private Sportif user;
+	/**
+	 * L'identifiant de la course
+	 */
 	private int id;
 	/**
 	 * Derniere localisation de l'utilisateur, renseigné uniquement
@@ -91,14 +123,6 @@ public class Course {
 	
 
 	/**
-	 * Change la date de la course
-	 * @param date la date en ms 
-	 */
-	private void setDate(long date) {
-		this.date=new Date(date);
-	}
-	
-	/**
 	 * Met a jour le debut de la course
 	 * @param debutCourse le moment de début de la course
 	 */
@@ -138,6 +162,9 @@ public class Course {
 	public double getVitesseMoyenne () {
 		Log.d(LOGCAT_TAG,"Vitesse Moy : " + (double) this.getDistance() + " / " + (double) this.getDuree());
 		double vitKms = this.getDistance() / this.getDuree();
+		if(Double.isNaN(vitKms)) {
+			vitKms=0;
+		}
 		return (double) (Math.floor(vitKms*3600*100)/100);
 	}
 
@@ -337,7 +364,10 @@ public class Course {
 	 */
 	private float getMet(Sport sport, double vitesse){
 		float met = 1.0f;
-		if(sport==Sport.COURSE) {
+		if(vitesse<0.5) {
+			met = 0.0f;
+		}
+		else if(sport==Sport.COURSE && vitesse > 1.5) {
 			if(vitesse<4){
 				met = 2.3F; 
 			}
@@ -353,7 +383,7 @@ public class Course {
 				met = 7.5F;
 			}
 		}
-		else if(sport==Sport.VELO){
+		else if(sport==Sport.VELO && vitesse > 1.5){
 			if(vitesse<16){
 				met = 4.0F;
 			}
@@ -361,7 +391,7 @@ public class Course {
 				met = 5.5F;
 			}
 		}
-		else if(sport==Sport.ROLLER) {
+		else if(sport==Sport.ROLLER && vitesse > 1.5) {
 				if(vitesse<10){
 					met = 6;
 				}
@@ -369,6 +399,7 @@ public class Course {
 					met = 7;
 				}
 		}
+		
 		return met;
 	}
 }

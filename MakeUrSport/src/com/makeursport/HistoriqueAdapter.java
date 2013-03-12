@@ -11,12 +11,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
 /**
- * Classe permettant de gerer l'affichage d'une listes de courses dans une ListView
+ * Classe permettant de liée une collection de Course a une ListView
  * @author L'équipe MakeUrSport
  *
  */
@@ -73,7 +72,7 @@ public class HistoriqueAdapter extends BaseAdapter {
 	public long getItemId(int position) {
 		return this.listCourse.get(position).getId();
 	}
-
+	
 	public View getView(int position, View convertview, ViewGroup parent) {
 		LinearLayout layout =null;
 		

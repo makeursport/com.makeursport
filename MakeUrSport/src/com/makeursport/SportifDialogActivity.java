@@ -51,7 +51,8 @@ public class SportifDialogActivity extends SherlockFragmentActivity implements O
 			String poids=
 					((EditText)this.findViewById(R.id.ET_poids)).getText().toString();
 			if(anneeNaissance!=null && taille!=null && poids !=null
-					&& !anneeNaissance.contentEquals("") && !taille.contentEquals("") && !poids.contentEquals("")) {
+					&& !anneeNaissance.contentEquals("") && !taille.contentEquals("") && !poids.contentEquals("")
+					&& !anneeNaissance.contentEquals("0") && !taille.contentEquals("0") && !poids.contentEquals("0")) {
 				SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(this);
 				Editor editPref = pref.edit();
 				editPref.putInt(this.getString(R.string.SP_annee_naissance), Integer.parseInt(anneeNaissance));

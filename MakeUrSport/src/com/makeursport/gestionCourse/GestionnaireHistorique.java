@@ -4,7 +4,6 @@ import java.util.ArrayList;
 
 import android.content.Context;
 import android.os.AsyncTask;
-import android.support.v4.app.FragmentManager;
 import android.util.Log;
 
 import com.google.android.gms.maps.model.LatLng;

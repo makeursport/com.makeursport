@@ -5,7 +5,7 @@ import android.location.Location;
 import android.util.Log;
 
 /**
- * Gestionnaire d'une course précise
+ * Gestionnaire d'une course, permettant d'intéragit avec celle ci.
  * @author l'équipe MakeUrSport
  * 
  */

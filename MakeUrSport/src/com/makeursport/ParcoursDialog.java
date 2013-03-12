@@ -48,10 +48,22 @@ public class ParcoursDialog extends SherlockFragmentActivity implements OnClickL
 	 * L'EditText permettant de recuperer la distance
 	 */
 	private EditText distET = null;
+	/**
+	 * La progressBar qui s'affiche avant de recuperer la position
+	 */
 	private ProgressBar loading = null;
+	/**
+	 * Le bouton confirmer
+	 */
 	private Button confirmBT = null;
+	/**
+	 * Le bouton annulé
+	 */
 	private Button cancelBT = null;
-	
+	/**
+	 * Le contexte de l'activity en cours
+	 */
+	private Context mContext;
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -62,7 +74,9 @@ public class ParcoursDialog extends SherlockFragmentActivity implements OnClickL
 		cancelBT = (Button) this.findViewById(R.id.BT_cancel);
 		confirmBT.setOnClickListener(this);
 		cancelBT.setOnClickListener(this);
-
+		
+		this.mContext=this;
+		
 		lm = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
 		
 		lm.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, this);
@@ -83,12 +97,17 @@ public class ParcoursDialog extends SherlockFragmentActivity implements OnClickL
 	public void onStatusChanged(String provider, int status, Bundle extras) {}
 	
 	/**
-	 * Lors d'un click sur un des boutons du Dialog
+	 * Lors d'un click sur un des boutons du Dialog. setBackgroundDrawable est deprecié uniquement à partir de l'API 16,
+	 * mais on l'utilise quand même avant
 	 */
+	@SuppressWarnings("deprecation")
 	public void onClick(View v) {
 		switch (v.getId()) {
 		case R.id.BT_confirm :
-			if (this.loc != null){
+			if(this.distET.getText().length() < 1 || this.distET.getText().toString().equalsIgnoreCase("0")) {
+				Toast.makeText(mContext, mContext.getString(R.string.mauvaise_distance), Toast.LENGTH_LONG).show();
+			}
+			else if (this.loc != null){
 				if (this.loading.getVisibility() == View.VISIBLE) {
 					this.loading.setVisibility(View.GONE);
 				}
@@ -97,7 +116,8 @@ public class ParcoursDialog extends SherlockFragmentActivity implements OnClickL
 			else {
 				if (this.loading.getVisibility() != View.VISIBLE) {
 					this.loading.setVisibility(View.VISIBLE);
-					this.confirmBT.setClickable(false);
+					this.confirmBT.setEnabled(false);
+					this.confirmBT.setBackgroundDrawable(getResources().getDrawable(R.drawable.list_selector_disabled_holo_light));
 				}
 			}
 			break;

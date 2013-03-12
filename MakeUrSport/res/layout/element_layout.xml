@@ -16,6 +16,7 @@
 <!-- 	    android:src="@drawable/ic_launcher"/> -->
 	<TextView 
 	    android:id="@+id/elem_info_course"
+	    android:text="@string/histo_course_titre"
 	    android:layout_width="wrap_content"
 	    android:layout_height="wrap_content"
       	android:gravity="center_vertical"

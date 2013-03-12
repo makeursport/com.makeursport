@@ -25,7 +25,9 @@ public class SportDialog extends SherlockListActivity {
 		this.setListAdapter(new MySimpleAdapter());
 	}
 
-	
+	/**
+	 * Classe de SimpleAdapter pour pouvoir gerer la liste des Sports
+	 */
 	private class MySimpleAdapter extends BaseAdapter {
 		ArrayList<Sport> sports;
 		public MySimpleAdapter() {

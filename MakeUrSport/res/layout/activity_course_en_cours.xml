@@ -161,9 +161,11 @@
 	    android:visibility="gone"/>
 	<TextView 
 	    android:id="@+id/TV_messageInactif"
-	    android:layout_width="wrap_content"
-	    android:layout_height="wrap_content"
+	    android:layout_width="match_parent"
+	    android:layout_height="match_parent"
 	    android:layout_alignParentBottom="true"
+	    style="@style/BiggerText"
+	    android:gravity="center"
 	    android:layout_alignParentLeft="true"
 	    android:text="@string/message_inactif"
 	    android:visibility="gone"

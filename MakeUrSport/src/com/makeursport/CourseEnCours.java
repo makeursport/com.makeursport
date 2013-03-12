@@ -90,7 +90,9 @@ public class CourseEnCours extends SherlockFragment implements LocationListener,
 				Log.d(LOGCAT_TAG+"_runnable","GPS inactif, pas de mise a jour");
 				rappelerDans=1000;
 			}
-			updateHandler.postDelayed(this, rappelerDans);
+			if(gestCourse.getEtatCourse() != EtatCourse.CourseArretee) {
+				updateHandler.postDelayed(this, rappelerDans);	
+			}
 		}
 	};
 	/**
@@ -127,6 +129,7 @@ public class CourseEnCours extends SherlockFragment implements LocationListener,
 	 * Numéro de requete utilisé lors du lancement de {@link SportDialog}
 	 */
 	public static final int DIALOG_SPORT_REQUEST_CODE = 8;
+	
 	@Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		super.onCreateView(inflater, container, savedInstanceState);
@@ -136,13 +139,10 @@ public class CourseEnCours extends SherlockFragment implements LocationListener,
 		SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(this.getActivity());
 	      //  pref.edit().clear().commit();
 
-        //On verifie si le sportif existe, si il existe on le recupere des SharedPreferences
-        if(pref.contains(this.getString(R.string.SP_annee_naissance))
-        		&& pref.contains(this.getString(R.string.SP_poids))
-        		&& pref.contains(this.getString(R.string.SP_taille))) {
-        	//this.gestCourse.getCourse().setUser(Sportif.fromPrefs(this.getSherlockActivity()));
-    	}
-        else {//Sinon on ouvre un dialog pour demander d'entrer des infos
+        //On verifie si le sportif existe, si il n'existe pas, on ouvre un dialog pour lui demander d'entrer les infos
+        if(!pref.contains(this.getString(R.string.SP_annee_naissance))
+        		&& !pref.contains(this.getString(R.string.SP_poids))
+        		&& !pref.contains(this.getString(R.string.SP_taille))) {
         	Intent demarrerDialogSportif = new Intent(this.getActivity(),SportifDialogActivity.class);
         	//Le startActivityForResult demarre le dialog mais se met en attente d'une réponse
         	//De façon à pouvoir traiter si l'utilisateur rentre les infos comme prévu
@@ -169,6 +169,7 @@ public class CourseEnCours extends SherlockFragment implements LocationListener,
         //On lance le GPS Status Listener, pour qu'on nous dise quand le GPS marche
    		this.locationManager.addGpsStatusListener(this);
 		this.setHasOptionsMenu(true);//On signal que l'on veut recevoir les appels concernant le menu de l'action bar
+		this.getSherlockActivity().setTitle(this.getString(R.string.title_activity_course_en_cours));
 		this.vuePrincipale= (RelativeLayout) inflater.inflate(R.layout.activity_course_en_cours, container, false);	
         return this.vuePrincipale;
 	}
@@ -178,19 +179,28 @@ public class CourseEnCours extends SherlockFragment implements LocationListener,
      * Met à jour la vue, en affichant les infos de la course en cours.
      */
     private void mettreAJourView() {
-    	Log.d(LOGCAT_TAG, "Mise à jour de la vue");
-    	Course course = gestCourse.getCourse();
-    	TextView vitMoy_tv = (TextView) vuePrincipale.findViewById(R.id.TV_vit_moyenne_valeur);
-    	vitMoy_tv.setText(course.getVitesseMoyenne() + this.getString(R.string.unite_vitesse));
-    	TextView vitReel_tv = (TextView) vuePrincipale.findViewById(R.id.TV_vit_reel_valeur);
-    	vitReel_tv.setText(course.getVitesseReelle() + this.getString(R.string.unite_vitesse));
-    	TextView calories_tv = (TextView) vuePrincipale.findViewById(R.id.TV_calories_valeur);
-    	calories_tv.setText(course.getCaloriesBrulees() + "");
-    	TextView distance_tv = (TextView) vuePrincipale.findViewById(R.id.TV_distance_valeur);
-    	distance_tv.setText(course.getDistanceArrondi() + this.getString(R.string.unite_distance));
-    	TextView duree_tv = (TextView) vuePrincipale.findViewById(R.id.TV_duree);
-    	long duree = course.getDuree();
-    	duree_tv.setText(String.format("%d:%02d:%02d", duree/(3600), (duree%3600)/(60), (duree%(60))));
+    	if(this.isVisible()) {
+	    	Log.d(LOGCAT_TAG, "Mise à jour de la vue");
+	    	Course course = gestCourse.getCourse();
+	    	TextView vitMoy_tv = (TextView) vuePrincipale.findViewById(R.id.TV_vit_moyenne_valeur);
+	    	vitMoy_tv.setText(course.getVitesseMoyenne() + this.getString(R.string.unite_vitesse));
+	    	TextView vitReel_tv = (TextView) vuePrincipale.findViewById(R.id.TV_vit_reel_valeur);
+	    	vitReel_tv.setText(course.getVitesseReelle() + this.getString(R.string.unite_vitesse));
+	    	TextView calories_tv = (TextView) vuePrincipale.findViewById(R.id.TV_calories_valeur);
+	    	calories_tv.setText(course.getCaloriesBrulees() + "");
+	    	TextView distance_tv = (TextView) vuePrincipale.findViewById(R.id.TV_distance_valeur);
+	    	distance_tv.setText(course.getDistanceArrondi() + this.getString(R.string.unite_distance));
+	    	TextView duree_tv = (TextView) vuePrincipale.findViewById(R.id.TV_duree);
+	    	long duree = course.getDuree();
+	    	duree_tv.setText(String.format("%d:%02d:%02d", duree/(3600), (duree%3600)/(60), (duree%(60))));
+    	} else {
+    		this.stopperLocationListener();
+    		this.updateHandler.removeCallbacks(runnableMiseAJour);
+    		if(this.gestCourse!=null) {
+    			this.gestCourse.stopperCourse();
+    		}
+    	}
+    	
     }
     /**
      * Demande la mise à jour de la localistion.
@@ -339,12 +349,13 @@ public class CourseEnCours extends SherlockFragment implements LocationListener,
 				this.gestCourse.demarrerCourse(this.getSherlockActivity());
 				this.mapFragment.initialiserCartePourNouvelleCourse();
 				this.mapFragment.mettreModeCourse();
-				this.updateHandler = new Handler();
+				if(this.updateHandler==null) {
+					this.updateHandler = new Handler();
+				}
 		    	this.updateHandler.post(runnableMiseAJour);
 		    	this.swapIcons(this.gestCourse.getEtatCourse());
 		    	this.demarrerLocationListener();
 			}
-			
 			else if(this.gestCourse.getEtatCourse()==EtatCourse.CourseEnPause){//Si la course est en pause : démarrage
 				this.gestCourse.reprendreCourse();
 				this.mapFragment.mettreModeCourse();
@@ -363,8 +374,10 @@ public class CourseEnCours extends SherlockFragment implements LocationListener,
 			if(this.gestCourse.getEtatCourse() != EtatCourse.CourseArretee) {
 				this.gestCourse.stopperCourse();
 		    	this.swapIcons(this.gestCourse.getEtatCourse());
-		    	LatLng dernPos = new LatLng(dernierePosition.getLatitude(), dernierePosition.getLongitude());
-		    	this.gestCourse.getCourse().sauvegarderCourse(this.getSherlockActivity(),dernPos);
+		    	if(dernierePosition != null) {
+			    	LatLng dernPos = new LatLng(dernierePosition.getLatitude(), dernierePosition.getLongitude());
+			    	this.gestCourse.getCourse().sauvegarderCourse(this.getSherlockActivity(),dernPos);
+		    	}
 		    	this.cacherVoile();
 				this.mapFragment.arreterModeCourse();
 		    	this.stopperLocationListener();
@@ -411,12 +424,15 @@ public class CourseEnCours extends SherlockFragment implements LocationListener,
     }
 	
 	/**
-	 * Est appelé dès que la dialog SportifDialogActivity est fermé.
+	 * Est appelé dès que la dialog {@link SportifDialogActivity} ou {@link SportDialog} est fermé.
 	 * 
 	 * Plus précisement, onActivityResult est appelé dès qu'une activité démarré par
 	 * startActivityForResult (cf {@link CourseEnCours#onCreate()}) est fermé.
 	 * Elle sert à traiter le résultat retourné par cette activité.
 	 * Ici le click sur le bouton cancel, ou le click sur le bouton confirm
+	 * @param requestCode le code requête mis en place lors du lancement de l'activité
+	 * @param resultCode le code retourné par l'activité
+	 * @param data les infos en plus retournées par l'activité
 	 */
 	@Override
 	public void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -466,14 +482,20 @@ public class CourseEnCours extends SherlockFragment implements LocationListener,
 	public void onDestroyView() {
 		super.onDestroyView();
 		Log.d(LOGCAT_TAG, "Suppression du GPSStatusListener");
-		this.locationManager.removeGpsStatusListener(this);
-		if(this.gestCourse.getEtatCourse() == EtatCourse.CourseLancee || this.gestCourse.getEtatCourse()==EtatCourse.CourseEnPause) {
-	    	LatLng dernPos = new LatLng(dernierePosition.getLatitude(), dernierePosition.getLongitude());
+		if(this.locationManager != null)
+			this.locationManager.removeGpsStatusListener(this);
+		if(this.gestCourse != null
+				&& (this.gestCourse.getEtatCourse() == EtatCourse.CourseLancee || this.gestCourse.getEtatCourse()==EtatCourse.CourseEnPause)
+				&& this.dernierePosition!=null) {
+			LatLng dernPos = new LatLng(dernierePosition.getLatitude(), dernierePosition.getLongitude());
 	    	this.gestCourse.getCourse().sauvegarderCourse(this.getSherlockActivity(),dernPos);
 		}
-		this.tts.stop();
+		this.stopperLocationListener();
+
+		if(this.tts != null)
+			this.tts.stop();
 	}
-	
+
 	public void onInit(int status) {
 		if (status == TextToSpeech.SUCCESS) {
 			int result = this.tts.setLanguage(Locale.FRANCE);
@@ -488,7 +510,7 @@ public class CourseEnCours extends SherlockFragment implements LocationListener,
 	 */
 	private void speakTTS() {
 		long d = this.gestCourse.getCourse().getDuree();
-		String duree = String.format("%d:%02d:%02d", d/(3600), (d%3600)/(60), (d%(60)));
+		String duree = String.format((Locale)null, "%d:%02d:%02d", d/(3600), (d%3600)/(60), (d%(60)));
 		String txt = this.getString(R.string.message_tts,this.gestCourse.getCourse().getDistanceArrondi(),duree, this.gestCourse.getCourse().getVitesseMoyenne());
 		tts.speak(txt, TextToSpeech.QUEUE_FLUSH, null);
 	}

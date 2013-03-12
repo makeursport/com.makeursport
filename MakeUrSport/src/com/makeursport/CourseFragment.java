@@ -1,5 +1,8 @@
 package com.makeursport;
 
+import java.text.DateFormat;
+import java.util.Locale;
+
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
@@ -14,7 +17,6 @@ import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuInflater;
 import com.actionbarsherlock.view.MenuItem;
 import com.google.android.gms.maps.GoogleMapOptions;
-import com.google.android.gms.maps.model.CameraPosition;
 import com.makeursport.gestionCourse.Course;
 import com.makeursport.gestionCourse.GestionnaireHistorique;
 /**
@@ -28,9 +30,21 @@ public class CourseFragment extends SherlockFragment{
 	 * Le String permettant de recuperer l'id passé en intent/bundle
 	 */
 	public static final String ID = "com.makeursport.ID";
+	/**
+	 * TextView qui contient la vue des calories brûlées
+	 */
 	private TextView calories=null;
+	/**
+	 * Vue qui affiche la vitesse Moyenne
+	 */
 	private TextView vitesseMoy=null;
+	/**
+	 * Vue qui affiche la durée 
+	 */
 	private TextView duree=null;
+	/**
+	 * Vue qui contient la distance
+	 */
 	private TextView distance=null;
 	/**
 	 * Le gestionnaire de l'historique avec lequel on communique a la db
@@ -44,13 +58,13 @@ public class CourseFragment extends SherlockFragment{
 	 * le fragment ou il y a la map
 	 */
 	MyMapFragment mapFragment;
+	
+	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		super.onCreateView(inflater, container, savedInstanceState);
 	    View monLayout=inflater.inflate(R.layout.activity_course, container,false);
 	   
-	    /**
-	     * On récupère l'id de la course clickée
-	     */
+	    // récupère l'id de la course clickée
 	    if(this.getArguments()!=null && this.getArguments().containsKey(ID)){
 	    	this.courseId=this.getArguments().getInt(ID);
 	    }
@@ -66,15 +80,11 @@ public class CourseFragment extends SherlockFragment{
 		.commit();
 	    
 	    
-	    /**
-	     * Requète de récuprération de la course
-	     */
-	    this.historique=new GestionnaireHistorique(this);
+	    //Requète de récuprération de la course
+	     this.historique=new GestionnaireHistorique(this);
 	    this.historique.selectionnerCourse(courseId);
 	    
-	    /**
-	     * On associe les vues avec les ressources 
-	     */
+	    //On associe les vues avec les ressources 
 	    this.vitesseMoy=(TextView)monLayout.findViewById(R.id.TV_vit_moyenne_valeur);
 	    this.duree=(TextView)monLayout.findViewById(R.id.TV_duree);
 	    this.distance=(TextView)monLayout.findViewById(R.id.TV_distance_valeur);
@@ -104,11 +114,14 @@ public class CourseFragment extends SherlockFragment{
     	this.duree.setText(String.format("%dh%dm%ds", duree/(3600), (duree%3600)/(60), (duree%(60))));
     	this.mapFragment.mettreAJourCarte(course.getDernierPos().latitude, course.getDernierPos().longitude,0,MyMapFragment.ZOOM_LEVEL-3);
     	this.mapFragment.mettreModeHistorique();
+		DateFormat df = DateFormat.getDateInstance(DateFormat.MEDIUM, Locale.getDefault());
+		this.getSherlockActivity().setTitle(this.getString(R.string.course_titre,""+df.format(course.getDate())));
 	}
+	
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch(item.getItemId()) {
-		case R.id.MenuBT_delete:
+		case R.id.MenuBT_delete_confirm:
 			this.historique.supprimerCourse(courseId);
 			break;
 		case R.id.MenuBT_share:
@@ -123,7 +136,9 @@ public class CourseFragment extends SherlockFragment{
 		}
 		return true;
 	}
-
+	/**
+	 * Méthode permettant d'effectuer le retour vers une {@link HistoriqueFragment}
+	 */
 	public void retourHistoriqueFragment() {
 		FragmentManager fm = this.getSherlockActivity().getSupportFragmentManager();
 		fm.beginTransaction()

@@ -11,13 +11,7 @@ import com.google.android.gms.maps.model.LatLng;
 import com.makeursport.R;
 import com.slidingmenu.lib.SlidingMenu;
 import com.slidingmenu.lib.app.SlidingFragmentActivity;
-/*
- * TODO:
- *	   -> TTS
- *	   -> Partage Stats
- *	   -> Problème d'unité avec les calories ? TOTEST
- *
- */
+
 /**
  * Activité principale de MakeUrSport qui permet de gérer
  * les différents fragments de l'application
@@ -31,6 +25,7 @@ public class MainActivity extends SlidingFragmentActivity {
 	 */
 	private final String LOGCAT_TAG=this.getClass().getCanonicalName();
 	
+	@Override
 	public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main_layout);
@@ -64,16 +59,18 @@ public class MainActivity extends SlidingFragmentActivity {
         
         //On affiche le contenu que l'on veut à l'ouverture de l'application, ici CourseEnCours()
         switchContent(new CourseEnCours());
-        ViewServer.get(this).addWindow(this);
+        //ViewServer.get(this).addWindow(this);
 
 	}
+	@Override
 	public void onDestroy() {
 		super.onDestroy();
-		ViewServer.get(this).removeWindow(this);
+	//	ViewServer.get(this).removeWindow(this);
 	}
+	@Override
 	public void onResume() {
 		super.onResume();
-		ViewServer.get(this).setFocusedWindow(this);
+	//	ViewServer.get(this).setFocusedWindow(this);
 	}
 
 	@Override
@@ -149,12 +146,12 @@ public class MainActivity extends SlidingFragmentActivity {
 		.addToBackStack("AddedFragment")
 		.commit();
 	}
-	public void removeFragment(Fragment f) {
+	/*public void removeFragment(Fragment f) {
 		this.getSupportFragmentManager()
 		.beginTransaction()
 		.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
 		.remove(f)
 		.commit();
 		this.getSupportFragmentManager().popBackStack();
-	}
+	}*/
 }

@@ -2,19 +2,15 @@ package com.makeursport;
 
 import java.util.ArrayList;
 
-import android.content.Intent;
-import android.location.LocationManager;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.Toast;
 import android.widget.AdapterView.OnItemClickListener;
 import com.actionbarsherlock.app.SherlockListFragment;
 import com.actionbarsherlock.view.MenuItem;
 import com.makeursport.gestionCourse.Course;
-import com.makeursport.gestionCourse.EtatCourse;
 import com.makeursport.gestionCourse.GestionnaireHistorique;
 import com.slidingmenu.lib.app.SlidingFragmentActivity;
 /**
@@ -58,28 +54,7 @@ public class HistoriqueFragment extends SherlockListFragment{
 		}
 	};
 	
-	/*public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-		super.onCreateView(inflater, container, savedInstanceState);
-	    View monLayout=inflater.inflate(R.layout.activity_historique, container,false);
 
-        //listCourse=(ListView) monLayout.findViewById(R.id.listCourse);
-        //adapter = new HistoriqueAdapter(this.getSherlockActivity());
-        //listCourse.setAdapter(adapter);
-        
-        /**
-	     * Boucle de repeuplage de la bd
-	      for(int i=0;i<5;i++){
-        	historique.setCourse(new Course(0,new Date().getTime(),456f,45,Sport.COURSE));
-	        historique.setCourse(new Course(0,new Date().getTime(),456f,45,Sport.ROLLER));
-	        historique.setCourse(new Course(0,new Date().getTime(),456f,45,Sport.VELO));
-	    }* /
-   
-        //historique.getArray();
-        //Log.d("BLABLA",historique.getCourse(14).getCaloriesBrulees()+"");
-        this.getListView().setOnItemClickListener(courseListener);
-        return monLayout;
-	 
-    }*/
 	@Override
 	public void onResume(){
 		super.onResume();
@@ -90,6 +65,7 @@ public class HistoriqueFragment extends SherlockListFragment{
         historique=new GestionnaireHistorique(this);
 		historique.selectToutesLesCourses();
 		this.setHasOptionsMenu(true);
+		this.getSherlockActivity().setTitle(this.getString(R.string.title_historique));
 	}
 	/**
 	 * Modifie l'adapter courant et lui dit de mettre à jour sa vue
